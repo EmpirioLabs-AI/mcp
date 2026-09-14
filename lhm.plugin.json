@@ -1,0 +1,2603 @@
+{
+  "identifier": "empiriolabs-ai",
+  "name": "EmpirioLabs AI",
+  "version": "1.2.0",
+  "author": "EmpirioLabs AI",
+  "authorUrl": "https://empiriolabs.ai",
+  "category": "developer",
+  "cloudEndpoint": "https://mcp.empiriolabs.ai/mcp",
+  "description": "Run 180+ AI models, image, video and speech generation, web search with citations, batch jobs, GPU Cloud and hosted agents as tools. Sign in with your EmpirioLabs account.",
+  "homepage": "https://github.com/EmpirioLabs-AI/mcp",
+  "icon": "https://empiriolabs.ai/images/icon-dark-512.png",
+  "tags": [
+    "ai-models",
+    "llm",
+    "image-generation",
+    "video-generation",
+    "speech",
+    "web-search",
+    "research",
+    "batch",
+    "gpu-cloud",
+    "hosted-agents"
+  ],
+  "tools": [
+    {
+      "name": "list_models",
+      "description": "List EmpirioLabs models with provider, modality, endpoints and final prices. Filter by free-text query, modality (text, image, video, audio, multimodal, 3D), category, provider, or endpoint path.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Free-text filter matched against id, name, provider, description, features and aliases."
+          },
+          "modality": {
+            "type": "string",
+            "description": "Filter by modality.",
+            "enum": [
+              "text",
+              "image",
+              "video",
+              "audio",
+              "multimodal",
+              "3D"
+            ]
+          },
+          "category": {
+            "type": "string",
+            "description": "Filter by catalog category such as text, image, video, audio, research, transcription, embedding, reranker, 3d, tools."
+          },
+          "provider": {
+            "type": "string",
+            "description": "Filter by provider slug (for example alibaba, deepseek, zhipu)."
+          },
+          "endpoint": {
+            "type": "string",
+            "description": "Only models that support this endpoint path, for example /v1/chat/completions or /v1/videos/generations."
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Maximum rows to return (default 50).",
+            "minimum": 1,
+            "maximum": 200
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_model",
+      "description": "Get one model's full schema: description, endpoints, context window, final prices, notes, and every supported parameter with defaults and ranges.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "model_id": {
+            "type": "string",
+            "description": "Canonical model slug."
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "model_id"
+        ]
+      }
+    },
+    {
+      "name": "chat",
+      "description": "Run a chat completion on any EmpirioLabs chat model and return the assistant reply, reasoning (when the model exposes it), tool calls and token usage. Uses credits.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "model": {
+            "type": "string"
+          },
+          "messages": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "role": {
+                  "enum": [
+                    "system",
+                    "user",
+                    "assistant",
+                    "tool"
+                  ],
+                  "type": "string"
+                },
+                "content": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": true
+                      }
+                    }
+                  ]
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "temperature": {
+            "minimum": 0,
+            "maximum": 2,
+            "type": "number"
+          },
+          "max_tokens": {
+            "type": "integer"
+          },
+          "tools": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          },
+          "tool_choice": {
+            "anyOf": [
+              {
+                "enum": [
+                  "auto",
+                  "none",
+                  "required"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "object",
+                "additionalProperties": true
+              }
+            ]
+          },
+          "response_format": {
+            "description": "Constrain the output format on models that advertise structured output. Omit it for normal text. Set `{ \"type\": \"json_object\" }` to force a valid JSON object (JSON mode). Set `{ \"type\": \"json_schema\", \"json_schema\": { \"name\": \"...\", \"strict\": true, \"schema\": { ... } } }` to force output that conforms to a JSON Schema. Support is per model: check the `structured_output` field and the \"Structured.",
+            "type": "object",
+            "properties": {
+              "type": {
+                "description": "Output format. `text` (default, unconstrained), `json_object` (any valid JSON object), or `json_schema` (schema-enforced).",
+                "enum": [
+                  "text",
+                  "json_object",
+                  "json_schema"
+                ],
+                "type": "string"
+              },
+              "json_schema": {
+                "description": "Required when `type` is `json_schema`. Names the schema the output must match.",
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "description": "A name for the schema.",
+                    "type": "string"
+                  },
+                  "strict": {
+                    "description": "Enforce strict conformance to the schema.",
+                    "type": "boolean"
+                  },
+                  "schema": {
+                    "description": "A JSON Schema object describing the required output shape.",
+                    "type": "object",
+                    "additionalProperties": true
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "additionalProperties": false
+          },
+          "enable_thinking": {
+            "description": "Enable model reasoning on models that advertise this parameter.",
+            "type": "boolean"
+          },
+          "thinking_budget": {
+            "description": "Maximum tokens reserved for model reasoning on models that advertise this parameter.",
+            "minimum": 1,
+            "type": "integer"
+          },
+          "disable_formatting": {
+            "description": "Return raw upstream response with no server-side formatting.",
+            "default": false,
+            "type": "boolean"
+          },
+          "prompt": {
+            "type": "string",
+            "description": "A single user message. Use messages instead for multi-turn input."
+          },
+          "system": {
+            "type": "string",
+            "description": "Optional system prompt prepended to the conversation."
+          },
+          "parameters": {
+            "type": "object",
+            "description": "Extra request fields passed through unchanged. Use get_model to see the supported parameter names, ranges, and defaults for the chosen model.",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "model"
+        ]
+      }
+    },
+    {
+      "name": "embeddings",
+      "description": "Create embedding vectors for one or more texts with an embedding model. Uses credits.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "model": {
+            "type": "string"
+          },
+          "input": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            ]
+          },
+          "encoding_format": {
+            "enum": [
+              "float",
+              "base64"
+            ],
+            "default": "float",
+            "type": "string"
+          },
+          "parameters": {
+            "type": "object",
+            "description": "Extra request fields passed through unchanged. Use get_model to see the supported parameter names, ranges, and defaults for the chosen model.",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "model",
+          "input"
+        ]
+      }
+    },
+    {
+      "name": "rerank",
+      "description": "Score and reorder documents by relevance to a query with a reranking model. Uses credits.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "model": {
+            "type": "string"
+          },
+          "query": {
+            "description": "Query text. Max 4,000 tokens.",
+            "type": "string"
+          },
+          "documents": {
+            "description": "Candidate documents to sort. Max 500 items, each up to 4,000 tokens.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "top_n": {
+            "description": "Number of top-ranked documents to return. Defaults to all.",
+            "minimum": 1,
+            "maximum": 500,
+            "type": "integer"
+          },
+          "instruct": {
+            "description": "Custom English instruction guiding the sort. Defaults to a Q&A retrieval policy. Pass `\"Retrieve semantically similar text.\"` for similarity sorting.",
+            "type": "string"
+          },
+          "return_documents": {
+            "description": "When true, return the original document text alongside each result.",
+            "default": false,
+            "type": "boolean"
+          },
+          "parameters": {
+            "type": "object",
+            "description": "Extra request fields passed through unchanged. Use get_model to see the supported parameter names, ranges, and defaults for the chosen model.",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "model",
+          "query",
+          "documents"
+        ]
+      }
+    },
+    {
+      "name": "generate_image",
+      "description": "Generate images from a prompt (or a generation template) with an image model. Returns signed output URLs, or a job_id when generation takes longer than the wait. Uses credits.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "model": {
+            "type": "string"
+          },
+          "prompt": {
+            "type": "string"
+          },
+          "template": {
+            "description": "Optional image template slug. When provided, the canonical prompt blends with your `prompt`, the recommended model is chosen if you don't pass one, and default params merge for any key you didn't set. See `GET /v1/images/templates`.",
+            "type": "string"
+          },
+          "aspect_ratio": {
+            "type": "string"
+          },
+          "resolution": {
+            "type": "string"
+          },
+          "num_images": {
+            "minimum": 1,
+            "maximum": 4,
+            "default": 1,
+            "type": "integer"
+          },
+          "image": {
+            "description": "Reference image URLs for image-edit mode.",
+            "type": "array",
+            "items": {
+              "format": "uri",
+              "type": "string"
+            }
+          },
+          "parameters": {
+            "type": "object",
+            "description": "Extra request fields passed through unchanged. Use get_model to see the supported parameter names, ranges, and defaults for the chosen model.",
+            "additionalProperties": true
+          },
+          "wait_seconds": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 50,
+            "description": "Seconds to wait for the result before returning a job_id you can poll with get_job (default 40, max 50)."
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "generate_video",
+      "description": "Generate a video from a prompt, an image, or a creative-effect template with a video model. Video takes minutes, so the tool returns a job_id for the running job. Uses credits.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "model": {
+            "type": "string"
+          },
+          "prompt": {
+            "type": "string"
+          },
+          "template": {
+            "description": "Optional template slug. When provided, the canonical prompt blends with your `prompt`, the recommended model is chosen if you don't pass one, and default params merge for any key you didn't supply. Validation 400s if the chosen model is not in `template.supported_models`. See `GET /v1/videos/templates`.",
+            "type": "string"
+          },
+          "extend_from": {
+            "description": "Continue a prior video. Pass exactly one of `job_id` (any prior async job from this account) or `video_url` (an http(s) URL to a video). Works with every supported video model; EmpirioLabs handles the model-specific wiring for you.",
+            "type": "object",
+            "properties": {
+              "job_id": {
+                "type": "string"
+              },
+              "video_url": {
+                "format": "uri",
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          },
+          "resolution": {
+            "type": "string"
+          },
+          "aspect_ratio": {
+            "type": "string"
+          },
+          "duration": {
+            "type": "integer"
+          },
+          "generate_audio": {
+            "default": true,
+            "type": "boolean"
+          },
+          "image": {
+            "description": "Reference image URL for image-to-video modes.",
+            "format": "uri",
+            "type": "string"
+          },
+          "image_url": {
+            "description": "Alias for `image`. Accepted on any image-to-video model.",
+            "format": "uri",
+            "type": "string"
+          },
+          "images": {
+            "description": "Multiple input images. On a model that supports reference-to-video, two or more images are treated as reference images; a single image behaves like `image`.",
+            "type": "array",
+            "items": {
+              "format": "uri",
+              "type": "string"
+            }
+          },
+          "reference_images": {
+            "description": "Reference images for reference-to-video, on models that support it. The subjects are carried into a new scene rather than used as the first frame, so this cannot be combined with `image`. Per-model limits (how many references, and the maximum resolution when references are used) are listed on the model page and in `GET /v1/models/{model}`.",
+            "type": "array",
+            "items": {
+              "format": "uri",
+              "type": "string"
+            }
+          },
+          "mode": {
+            "description": "Generation mode on models that expose one, for example `t2v`, `i2v`, or `r2v`. Defaults to `auto`, which picks the mode from the inputs you send. See the model page for the values a given model accepts.",
+            "type": "string"
+          },
+          "parameters": {
+            "type": "object",
+            "description": "Extra request fields passed through unchanged. Use get_model to see the supported parameter names, ranges, and defaults for the chosen model.",
+            "additionalProperties": true
+          },
+          "wait_seconds": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 50,
+            "description": "Seconds to wait for the result before returning a job_id you can poll with get_job (default 40, max 50)."
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "list_generation_templates",
+      "description": "List curated image and video generation templates (creative effects) with their slug, modality, recommended model and inputs.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "category": {
+            "type": "string",
+            "description": "Filter to a single category."
+          },
+          "modality": {
+            "enum": [
+              "video",
+              "image"
+            ],
+            "type": "string",
+            "description": "Filter by template modality."
+          },
+          "type": {
+            "enum": [
+              "video",
+              "image"
+            ],
+            "type": "string",
+            "description": "Alias for `modality`."
+          },
+          "model": {
+            "type": "string",
+            "description": "Only return templates whose `supported_models` list contains this model slug."
+          },
+          "featured": {
+            "type": "boolean",
+            "description": "Set to true to filter to featured templates only."
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_generation_template",
+      "description": "Get one generation template by slug, including its prompt guidance, recommended model and default parameters.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "slug": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "slug"
+        ]
+      }
+    },
+    {
+      "name": "list_compose_recipes",
+      "description": "List the Compose recipes that chain script, visuals, voice and music into a finished video, with their modes and inputs.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "compose_video",
+      "description": "Create a finished video from a Compose recipe (brief, script, storyboard or edits). Returns a job_id for the running job. Uses credits.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "recipe": {
+            "description": "Compose recipe slug from `GET /v1/videos/compose/recipes`.",
+            "type": "string"
+          },
+          "mode": {
+            "enum": [
+              "plan",
+              "render",
+              "edit"
+            ],
+            "default": "plan",
+            "type": "string"
+          },
+          "brief": {
+            "description": "Topic, product idea, or direction for `mode: \"plan\"`.",
+            "type": "string"
+          },
+          "script": {
+            "description": "Optional script text for plan mode.",
+            "type": "string"
+          },
+          "storyboard": {
+            "description": "Storyboard returned by plan mode and accepted by render mode.",
+            "type": "object",
+            "properties": {
+              "title": {
+                "type": "string"
+              },
+              "aspect_ratio": {
+                "type": "string"
+              },
+              "caption_style": {
+                "type": "string"
+              },
+              "scenes": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "index": {
+                      "type": "integer"
+                    },
+                    "narration": {
+                      "type": "string"
+                    },
+                    "visual_prompt": {
+                      "type": "string"
+                    },
+                    "caption": {
+                      "type": "string"
+                    },
+                    "duration_seconds": {
+                      "type": "number"
+                    },
+                    "image_url": {
+                      "format": "uri",
+                      "type": "string"
+                    },
+                    "video_url": {
+                      "format": "uri",
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": true
+                }
+              }
+            },
+            "additionalProperties": true
+          },
+          "manifest": {
+            "description": "Prior render manifest for edit mode.",
+            "type": "object",
+            "additionalProperties": true
+          },
+          "edits": {
+            "description": "Scene-level edit instructions for edit mode.",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "scene_index": {
+                  "type": "integer"
+                },
+                "instruction": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "aspect_ratio": {
+            "type": "string"
+          },
+          "scene_count": {
+            "minimum": 1,
+            "maximum": 12,
+            "type": "integer"
+          },
+          "caption_style": {
+            "type": "string"
+          },
+          "music": {
+            "description": "Optional music direction or preset.",
+            "type": "string"
+          },
+          "voice": {
+            "description": "Optional voice preset or voice ID for narration.",
+            "type": "string"
+          },
+          "product_image": {
+            "description": "Optional product reference image (http(s) URL) for recipes that accept one. Pass a URL the service can fetch; this endpoint does not accept file uploads.",
+            "format": "uri",
+            "type": "string"
+          },
+          "face_image": {
+            "description": "Optional presenter / face reference (http(s) URL) for recipes that require one (Talking Head, AI Avatar Explainer, etc.). Pass a URL the service can fetch; this endpoint does not accept file uploads.",
+            "format": "uri",
+            "type": "string"
+          },
+          "character_image_url": {
+            "description": "Optional character reference frame (http(s) URL) for character recipes; it overrides the generated character. URL only, the API does not accept uploads.",
+            "format": "uri",
+            "type": "string"
+          },
+          "gameplay_style": {
+            "description": "Optional gameplay background style when a recipe supports gameplay variants.",
+            "type": "string"
+          },
+          "video": {
+            "description": "For the Auto Captions recipe (`recipe: \"auto-captions\"`): the http(s) URL of the video to caption. Send a URL the service can fetch (for example a signed link or any publicly reachable URL). This endpoint does not accept multipart file uploads, so host the file and pass its URL. Aliases: `video_url`, `input_video`.",
+            "format": "uri",
+            "type": "string"
+          },
+          "language": {
+            "description": "Auto Captions: the spoken language of the video, or `auto` to detect it.",
+            "default": "auto",
+            "type": "string"
+          },
+          "translate_to": {
+            "description": "Auto Captions (optional): a target language to add a translation line under each spoken caption. Omit or use `none` for the original language only.",
+            "type": "string"
+          },
+          "speakers": {
+            "description": "Auto Captions: give each detected speaker its own caption color.",
+            "default": true,
+            "type": "boolean"
+          },
+          "model_overrides": {
+            "description": "Optional per-stage model overrides. Values must be listed in the recipe's model options.",
+            "type": "object",
+            "additionalProperties": true
+          },
+          "script_model": {
+            "description": "Shortcut for `model_overrides.script`.",
+            "type": "string"
+          },
+          "visual_model": {
+            "description": "Shortcut for `model_overrides.visual`.",
+            "type": "string"
+          },
+          "image_model": {
+            "description": "Shortcut for `model_overrides.image`.",
+            "type": "string"
+          },
+          "voice_model": {
+            "description": "Shortcut for `model_overrides.voice`.",
+            "type": "string"
+          },
+          "music_model": {
+            "description": "Shortcut for `model_overrides.music`.",
+            "type": "string"
+          },
+          "parameters": {
+            "type": "object",
+            "description": "Extra request fields passed through unchanged. Use get_model to see the supported parameter names, ranges, and defaults for the chosen model.",
+            "additionalProperties": true
+          },
+          "wait_seconds": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 50,
+            "description": "Seconds to wait for the result before returning a job_id you can poll with get_job (default 40, max 50)."
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "recipe",
+          "mode"
+        ]
+      }
+    },
+    {
+      "name": "generate_3d",
+      "description": "Generate a 3D model from an image with a 3D generation model (for example trellis-2-4b). Returns a job_id for the running job. Uses credits.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "model": {
+            "type": "string"
+          },
+          "image": {
+            "description": "Reference image for image-to-3D generation.",
+            "anyOf": [
+              {
+                "format": "uri",
+                "type": "string"
+              },
+              {
+                "description": "Base64 data URI or inline image bytes.",
+                "type": "string"
+              }
+            ]
+          },
+          "image_url": {
+            "description": "Alias for `image` when passing a public URL.",
+            "format": "uri",
+            "type": "string"
+          },
+          "resolution": {
+            "enum": [
+              "512",
+              "1024",
+              "1536"
+            ],
+            "default": "1024",
+            "type": "string"
+          },
+          "seed": {
+            "minimum": 0,
+            "maximum": 2147483647,
+            "default": 42,
+            "type": "integer"
+          },
+          "texture_size": {
+            "enum": [
+              "1024",
+              "2048",
+              "4096"
+            ],
+            "default": "2048",
+            "type": "string"
+          },
+          "decimation_target": {
+            "minimum": 10000,
+            "maximum": 1000000,
+            "default": 500000,
+            "type": "integer"
+          },
+          "remesh": {
+            "default": true,
+            "type": "boolean"
+          },
+          "max_num_tokens": {
+            "minimum": 1024,
+            "maximum": 131072,
+            "default": 49152,
+            "type": "integer"
+          },
+          "response_format": {
+            "enum": [
+              "url",
+              "b64_json"
+            ],
+            "default": "url",
+            "type": "string"
+          },
+          "parameters": {
+            "type": "object",
+            "description": "Extra request fields passed through unchanged. Use get_model to see the supported parameter names, ranges, and defaults for the chosen model.",
+            "additionalProperties": true
+          },
+          "wait_seconds": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 50,
+            "description": "Seconds to wait for the result before returning a job_id you can poll with get_job (default 40, max 50)."
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "model"
+        ]
+      }
+    },
+    {
+      "name": "text_to_speech",
+      "description": "Synthesize speech from text with a TTS model and voice. Returns a signed audio URL (or inline audio). Uses credits.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "model": {
+            "type": "string"
+          },
+          "input": {
+            "description": "Script / lyrics. Use [S1] / [S2] tags for multi-speaker models.",
+            "type": "string"
+          },
+          "prompt": {
+            "description": "Music generation models use `prompt` instead of `input`.",
+            "type": "string"
+          },
+          "voice": {
+            "type": "string"
+          },
+          "output_format": {
+            "type": "string"
+          },
+          "duration": {
+            "description": "Music generation only; output length in seconds.",
+            "type": "integer"
+          },
+          "parameters": {
+            "type": "object",
+            "description": "Extra request fields passed through unchanged. Use get_model to see the supported parameter names, ranges, and defaults for the chosen model.",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "model"
+        ]
+      }
+    },
+    {
+      "name": "list_voices",
+      "description": "List the voices available for text-to-speech, filterable by model, language, gender or search text.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "model": {
+            "type": "string",
+            "description": "TTS model whose voice catalog to return, for example `qwen-audio-3-0-tts` or `inworld-tts-max`."
+          },
+          "language": {
+            "type": "string",
+            "description": "Filter by language, matched case-insensitively as a substring, for example `english`. Supported by Qwen Audio 3.0 TTS."
+          },
+          "gender": {
+            "type": "string",
+            "description": "Filter by voice gender, for example `female`. Supported by Qwen Audio 3.0 TTS."
+          },
+          "tier": {
+            "type": "string",
+            "description": "Filter to voices usable by one tier of a tiered model, for example `flash`. Supported by Qwen Audio 3.0 TTS."
+          },
+          "q": {
+            "type": "string",
+            "description": "Free-text search across voice id, name, trait, and use case. Supported by Qwen Audio 3.0 TTS."
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "model"
+        ]
+      }
+    },
+    {
+      "name": "generate_audio",
+      "description": "Generate music or sound effects from a prompt with an audio generation model (for example ace-step-1-5-xl). Returns a signed URL or a job_id for the running job. Uses credits.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "model": {
+            "type": "string"
+          },
+          "prompt": {
+            "description": "Natural-language description of the audio to generate.",
+            "type": "string"
+          },
+          "input": {
+            "description": "Script / lyrics for podcast / multi-speaker models.",
+            "type": "string"
+          },
+          "duration": {
+            "description": "Output length in seconds.",
+            "type": "number"
+          },
+          "steps": {
+            "description": "Number of denoising steps. Higher = better quality but slower.",
+            "type": "integer"
+          },
+          "cfg_scale": {
+            "description": "Prompt adherence. Higher = closer to prompt but less creative.",
+            "type": "number"
+          },
+          "seed": {
+            "description": "Random seed for reproducibility.",
+            "type": "integer"
+          },
+          "output_format": {
+            "enum": [
+              "mp3",
+              "wav",
+              "flac",
+              "ogg"
+            ],
+            "type": "string"
+          },
+          "parameters": {
+            "type": "object",
+            "description": "Extra request fields passed through unchanged. Use get_model to see the supported parameter names, ranges, and defaults for the chosen model.",
+            "additionalProperties": true
+          },
+          "wait_seconds": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 50,
+            "description": "Seconds to wait for the result before returning a job_id you can poll with get_job (default 40, max 50)."
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "model"
+        ]
+      }
+    },
+    {
+      "name": "transcribe_audio",
+      "description": "Transcribe an audio or video file at an https URL with a speech-to-text model. Returns the transcript or a job_id for the running job. Uses credits.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "model": {
+            "type": "string"
+          },
+          "file_url": {
+            "format": "uri",
+            "type": "string"
+          },
+          "diarize": {
+            "default": false,
+            "type": "boolean"
+          },
+          "smart_format": {
+            "default": true,
+            "type": "boolean"
+          },
+          "parameters": {
+            "type": "object",
+            "description": "Extra request fields passed through unchanged. Use get_model to see the supported parameter names, ranges, and defaults for the chosen model.",
+            "additionalProperties": true
+          },
+          "wait_seconds": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 50,
+            "description": "Seconds to wait for the result before returning a job_id you can poll with get_job (default 40, max 50)."
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "model",
+          "file_url"
+        ]
+      }
+    },
+    {
+      "name": "web_search",
+      "description": "Run a live web search through a search model (for example exa-search, tavily-search, linkup-search). Returns results with titles, URLs and snippets. Uses credits.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "model": {
+            "type": "string"
+          },
+          "query": {
+            "type": "string"
+          },
+          "parameters": {
+            "type": "object",
+            "description": "Extra request fields passed through unchanged. Use get_model to see the supported parameter names, ranges, and defaults for the chosen model.",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "model",
+          "query"
+        ]
+      }
+    },
+    {
+      "name": "web_research",
+      "description": "Run a multi-step research task with citations (for example tavily-research, exa-research, linkup-deep-search). Takes up to a few minutes. Uses credits.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "model": {
+            "type": "string"
+          },
+          "query": {
+            "description": "The research question.",
+            "type": "string"
+          },
+          "messages": {
+            "description": "Alternative to `query`; pass a chat-style messages array for multi-turn research.",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          },
+          "reasoning_effort": {
+            "enum": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "default": "high",
+            "type": "string"
+          },
+          "max_output_tokens": {
+            "default": 10000,
+            "type": "integer"
+          },
+          "search_domain_filter": {
+            "description": "Comma-separated domains. Prefix with '-' to exclude. Max 20.",
+            "type": "string"
+          },
+          "search_recency_filter": {
+            "enum": [
+              "hour",
+              "day",
+              "week",
+              "month",
+              "year"
+            ],
+            "type": "string"
+          },
+          "disable_formatting": {
+            "description": "Skip EmpirioLabs Markdown formatting and return the raw upstream payload.",
+            "default": false,
+            "type": "boolean"
+          },
+          "parameters": {
+            "type": "object",
+            "description": "Extra request fields passed through unchanged. Use get_model to see the supported parameter names, ranges, and defaults for the chosen model.",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "model"
+        ]
+      }
+    },
+    {
+      "name": "web_answer",
+      "description": "Get a one-shot answer with citations from a grounded answer model (for example exa-answer). Uses credits.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "model": {
+            "type": "string"
+          },
+          "query": {
+            "type": "string"
+          },
+          "parameters": {
+            "type": "object",
+            "description": "Extra request fields passed through unchanged. Use get_model to see the supported parameter names, ranges, and defaults for the chosen model.",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "model",
+          "query"
+        ]
+      }
+    },
+    {
+      "name": "run_agent_task",
+      "description": "Start a long-running agent task (for example with the manus model) or send a follow-up message to an existing task. Returns the job_id and the task_id of the agent task. Uses credits.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "model": {
+            "type": "string"
+          },
+          "input": {
+            "description": "Instruction for the agent. For a new task this is the initial prompt; for a follow-up (when `task_id` is set) this is the new message added mid-run.",
+            "type": "string"
+          },
+          "task_id": {
+            "description": "Optional. When set, the call sends `input` as a follow-up message to this existing task instead of creating a new one.",
+            "type": "string"
+          },
+          "attachments": {
+            "description": "Files for the agent to work with (any type, audio, video, images, documents, data). Each item is a URL string or an object with url, filename, and mime_type. Files are placed in the agent's workspace before the task starts. Up to 10 files per message.",
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "description": "A publicly reachable file URL.",
+                  "type": "string"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "url": {
+                      "description": "Publicly reachable file URL or data URI.",
+                      "type": "string"
+                    },
+                    "filename": {
+                      "description": "Name the agent sees for the file.",
+                      "type": "string"
+                    },
+                    "mime_type": {
+                      "description": "MIME type of the file.",
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              ]
+            }
+          },
+          "agent_profile": {
+            "description": "Upstream agent profile. Available profiles depend on the model (e.g. Manus exposes `manus-1.6`).",
+            "default": "manus-1.6",
+            "type": "string"
+          },
+          "share_visibility": {
+            "description": "Manus share-link visibility (`public` or `private`).",
+            "default": "public",
+            "type": "string"
+          },
+          "disable_formatting": {
+            "description": "Skip the EmpirioLabs Markdown wrapper around the agent run. Aliases `raw`, `passthrough`, `raw_response`.",
+            "default": false,
+            "type": "boolean"
+          },
+          "parameters": {
+            "type": "object",
+            "description": "Extra request fields passed through unchanged. Use get_model to see the supported parameter names, ranges, and defaults for the chosen model.",
+            "additionalProperties": true
+          },
+          "wait_seconds": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 50,
+            "description": "Seconds to wait for the result before returning a job_id you can poll with get_job (default 40, max 50)."
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "model",
+          "input"
+        ]
+      }
+    },
+    {
+      "name": "get_agent_task",
+      "description": "Get the status and output of an agent task.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "task_id": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "task_id"
+        ]
+      }
+    },
+    {
+      "name": "get_agent_task_messages",
+      "description": "List the messages exchanged during an agent task.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "task_id": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "task_id"
+        ]
+      }
+    },
+    {
+      "name": "stop_agent_task",
+      "description": "Stop a running agent task.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "task_id": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "task_id"
+        ]
+      }
+    },
+    {
+      "name": "analyze_image",
+      "description": "Ask a question about an image with a vision-capable model and get a text answer. Uses credits.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "model": {
+            "type": "string"
+          },
+          "image_url": {
+            "description": "URL or base64 of the image to analyze.",
+            "type": "string"
+          },
+          "question": {
+            "description": "What you want to know about the image.",
+            "type": "string"
+          },
+          "analysis_temperature": {
+            "type": "number"
+          },
+          "analysis_top_p": {
+            "type": "number"
+          },
+          "analysis_seed": {
+            "type": "integer"
+          },
+          "parameters": {
+            "type": "object",
+            "description": "Extra request fields passed through unchanged. Use get_model to see the supported parameter names, ranges, and defaults for the chosen model.",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "model",
+          "image_url",
+          "question"
+        ]
+      }
+    },
+    {
+      "name": "detect_ai_text",
+      "description": "Classify whether text was written by an AI model (GPTZero). Uses credits.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "model": {
+            "type": "string"
+          },
+          "input": {
+            "description": "Text or document to analyze (max 50,000 chars per document, 50 docs / 15 MB total per request).",
+            "type": "string"
+          },
+          "scan_type": {
+            "enum": [
+              "ai_detection",
+              "bibliography",
+              "fact_check"
+            ],
+            "default": "ai_detection",
+            "type": "string"
+          },
+          "multilingual": {
+            "description": "Enable multilingual model (FR / ES on top of EN).",
+            "default": false,
+            "type": "boolean"
+          },
+          "version": {
+            "default": "__latest__",
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "model",
+          "input"
+        ]
+      }
+    },
+    {
+      "name": "get_account_usage",
+      "description": "Read the account's current credit balance and recent usage history (model, endpoint, tokens, cost, status).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "limit": {
+            "minimum": 1,
+            "maximum": 200,
+            "default": 100,
+            "type": "integer",
+            "description": "Number of usage events to return."
+          },
+          "before": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Return events created before this timestamp. Use `next_cursor` for pagination."
+          },
+          "from": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Include events created at or after this timestamp."
+          },
+          "to": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Include events created at or before this timestamp."
+          },
+          "source": {
+            "enum": [
+              "api",
+              "playground",
+              "compose",
+              "gpu_cloud",
+              "hosted_agents"
+            ],
+            "type": "string",
+            "description": "Filter events by source: `api` (direct API requests), `playground`, `compose` (Compose video productions), `gpu_cloud` (GPU Cloud rentals), or `hosted_agents` (calls made by a Hosted Agent)."
+          },
+          "model": {
+            "type": "string",
+            "description": "Filter to one model ID."
+          },
+          "status": {
+            "enum": [
+              "success",
+              "error"
+            ],
+            "type": "string",
+            "description": "Filter by request status."
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "upload_batch_file",
+      "description": "Upload a JSONL file of requests for the Batch API (one {custom_id, method, url, body} object per line). Returns the file id to pass to create_batch.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "jsonl": {
+            "type": "string",
+            "description": "The file content as text."
+          },
+          "filename": {
+            "type": "string",
+            "description": "Optional file name (default batch.jsonl)."
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "jsonl"
+        ]
+      }
+    },
+    {
+      "name": "get_batch_file_content",
+      "description": "Download the content of a batch input, output, or error file as JSONL text.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "file_id": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "file_id"
+        ]
+      }
+    },
+    {
+      "name": "create_batch",
+      "description": "Start a discounted batch run from an uploaded JSONL file. Each line bills at the batch price when it executes. Uses credits.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "input_file_id": {
+            "type": "string"
+          },
+          "endpoint": {
+            "enum": [
+              "/v1/chat/completions",
+              "/v1/embeddings"
+            ],
+            "default": "/v1/chat/completions",
+            "type": "string"
+          },
+          "completion_window": {
+            "default": "24h",
+            "type": "string"
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "input_file_id"
+        ]
+      }
+    },
+    {
+      "name": "list_batches",
+      "description": "List the account's batch runs.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_batch",
+      "description": "Get a batch run's status, counts and output file ids.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "batch_id": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "batch_id"
+        ]
+      }
+    },
+    {
+      "name": "cancel_batch",
+      "description": "Cancel a batch run; lines that already executed stay billed.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "batch_id": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "batch_id"
+        ]
+      }
+    },
+    {
+      "name": "list_jobs",
+      "description": "List the account's recent asynchronous jobs, newest first.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "enum": [
+              "processing",
+              "completed",
+              "failed"
+            ],
+            "type": "string"
+          },
+          "limit": {
+            "maximum": 100,
+            "default": 25,
+            "type": "integer"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_job",
+      "description": "Get the status and result of an asynchronous generation job by job_id. Optionally wait up to wait_seconds for it to finish.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "job_id": {
+            "type": "string"
+          },
+          "wait_seconds": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 50,
+            "description": "Seconds to wait for the result before returning a job_id you can poll with get_job (default 40, max 50)."
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "job_id"
+        ]
+      }
+    },
+    {
+      "name": "cancel_job",
+      "description": "Cancel a queued or processing job. Completed jobs are returned unchanged.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "job_id": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "job_id"
+        ]
+      }
+    },
+    {
+      "name": "list_gpu_types",
+      "description": "List the GPU types available to rent with hourly prices, VRAM, and availability.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_gpu_type",
+      "description": "Get one GPU type by slug.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "slug": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "slug"
+        ]
+      }
+    },
+    {
+      "name": "order_gpu_cluster",
+      "description": "Order a multi-node GPU cluster from a fabric. Creates billable infrastructure charged by the hour.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "cluster_id": {
+            "description": "The `id` from `GET /v1/gpu/clusters`.",
+            "type": "string"
+          },
+          "template": {
+            "description": "Multi-node workload to run on every node.",
+            "type": "string"
+          },
+          "nodes": {
+            "description": "How many of the offered nodes to reserve. Defaults to all of them.",
+            "minimum": 2,
+            "type": "integer"
+          },
+          "volume_id": {
+            "description": "Optional object bucket mounted at `/mnt/<name>`, or network volume mounted at `/workspace`, shared by every node.",
+            "type": "string"
+          },
+          "max_price_hourly": {
+            "description": "Total $/hr you accepted for the size you are ordering. The order is refused above it.",
+            "type": "number"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "cluster_id",
+          "template"
+        ]
+      }
+    },
+    {
+      "name": "list_gpu_clusters",
+      "description": "List multi-node GPU clusters for distributed training, with node counts, prices and ordering availability.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "list_gpu_volumes",
+      "description": "List the account's persistent GPU volumes.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "create_gpu_volume",
+      "description": "Create a persistent volume that can be attached to GPU instances. Billable storage.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "description": "Uppercase letters are converted to lowercase before validation.",
+            "minLength": 2,
+            "maxLength": 32,
+            "pattern": "^[a-z0-9][a-z0-9\\-]*[a-z0-9]$",
+            "type": "string"
+          },
+          "size_gb": {
+            "minimum": 1,
+            "maximum": 4000,
+            "type": "integer"
+          },
+          "kind": {
+            "description": "workspace saves /workspace on stop and restores it on the next attach. object is an S3-compatible bucket mounted at /mnt/<name> and read in place. network shares /workspace across compatible instances and cluster nodes, with the same returned per-GB rate.",
+            "enum": [
+              "workspace",
+              "object",
+              "network"
+            ],
+            "default": "workspace",
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "size_gb"
+        ]
+      }
+    },
+    {
+      "name": "get_gpu_volume",
+      "description": "Get one GPU volume.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "volume_id": {
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "volume_id"
+        ]
+      }
+    },
+    {
+      "name": "delete_gpu_volume",
+      "description": "Delete a GPU volume and everything stored on it.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "volume_id": {
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "volume_id"
+        ]
+      }
+    },
+    {
+      "name": "list_gpu_instances",
+      "description": "List the account's GPU instances with status, GPU type, hourly price and connection details.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "deploy_gpu_instance",
+      "description": "Rent a GPU and start a workload on it (a template, a Hugging Face model, or a container image). Creates a billable instance charged by the hour until you destroy it.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "volume_id": {
+            "description": "An available volume you own. Its directory is restored into /workspace before startup and saved before stop or destruction.",
+            "format": "uuid",
+            "type": "string"
+          },
+          "gpu_slug": {
+            "description": "The GPU type to deploy from the catalog.",
+            "type": "string"
+          },
+          "mode": {
+            "description": "How to provision the GPU.",
+            "enum": [
+              "model",
+              "template",
+              "custom"
+            ],
+            "type": "string"
+          },
+          "hf_id": {
+            "description": "A Hugging Face repo id to serve with vLLM (mode `model`). Set `HF_TOKEN` in `env` for gated repos.",
+            "type": "string"
+          },
+          "template_slug": {
+            "description": "A curated model or template slug (mode `model` or `template`).",
+            "type": "string"
+          },
+          "image": {
+            "description": "A CUDA Docker image to run (mode `custom`).",
+            "type": "string"
+          },
+          "ports": {
+            "description": "Ports the workload listens on (mode `custom`).",
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          },
+          "env": {
+            "description": "Environment variables for the workload.",
+            "type": "object",
+            "additionalProperties": true
+          },
+          "num_gpus": {
+            "description": "Number of GPUs. Your current account limit is enforced at deploy and start time.",
+            "minimum": 1,
+            "maximum": 64,
+            "default": 1,
+            "type": "integer"
+          },
+          "disk_gb": {
+            "description": "Requested runtime disk in GB (100-300).",
+            "minimum": 100,
+            "maximum": 300,
+            "default": 150,
+            "type": "integer"
+          },
+          "onstart": {
+            "description": "Shell command to run inside the container (mode `custom`). Runs in place of the image's own start command.",
+            "maxLength": 6000,
+            "type": "string"
+          },
+          "min_vram_gb": {
+            "description": "Minimum combined VRAM the box must have, in GB. Used to reject a machine too small for the workload before it is allocated.",
+            "format": "float",
+            "type": "number"
+          },
+          "name": {
+            "description": "Optional label for the GPU Cloud instance.",
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "gpu_slug"
+        ]
+      }
+    },
+    {
+      "name": "get_gpu_instance",
+      "description": "Get one GPU instance's status, endpoints and cost so far.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "instance_id": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "instance_id"
+        ]
+      }
+    },
+    {
+      "name": "destroy_gpu_instance",
+      "description": "Destroy a GPU instance and stop its hourly charges. Data on the instance disk is lost unless it is on an attached volume.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "instance_id": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "instance_id"
+        ]
+      }
+    },
+    {
+      "name": "add_gpu_ssh_key",
+      "description": "Authorize an SSH public key on a running GPU instance and return the SSH connection details.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "instance_id": {
+            "pattern": "^[0-9a-f]{16}$",
+            "type": "string"
+          },
+          "public_key": {
+            "description": "A single-line ssh-ed25519 or ssh-rsa public key, without options or line breaks. RSA keys must be 2048 to 8192 bits.",
+            "maxLength": 8192,
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "instance_id",
+          "public_key"
+        ]
+      }
+    },
+    {
+      "name": "gpu_instance_action",
+      "description": "Stop (pauses hourly compute charges), start, or refresh a GPU instance.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "instance_id": {
+            "type": "string"
+          },
+          "action": {
+            "enum": [
+              "stop",
+              "start",
+              "refresh"
+            ],
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "instance_id",
+          "action"
+        ]
+      }
+    },
+    {
+      "name": "gpu_workload_send",
+      "description": "Send a POST, PUT, PATCH, or DELETE request with a JSON body to the workload running on your GPU instance through the authenticated connect endpoint (https://docs.empiriolabs.ai/gpu-cloud). For example call an LLM server you deployed.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "instance_id": {
+            "type": "string",
+            "description": "The 16-character instance id."
+          },
+          "path": {
+            "type": "string",
+            "description": "Path on the workload, for example v1/chat/completions."
+          },
+          "method": {
+            "type": "string",
+            "description": "HTTP method (default POST).",
+            "enum": [
+              "POST",
+              "PUT",
+              "PATCH",
+              "DELETE"
+            ]
+          },
+          "body": {
+            "type": "object",
+            "description": "JSON body to send.",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "instance_id"
+        ]
+      }
+    },
+    {
+      "name": "gpu_workload_get",
+      "description": "Send a GET request to the workload running on your GPU instance through the authenticated connect endpoint (https://docs.empiriolabs.ai/gpu-cloud). Useful for health checks and reading results.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "instance_id": {
+            "type": "string",
+            "description": "The 16-character instance id."
+          },
+          "path": {
+            "type": "string",
+            "description": "Path on the workload, for example v1/models or health."
+          },
+          "query": {
+            "type": "object",
+            "description": "Query string parameters.",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "instance_id"
+        ]
+      }
+    },
+    {
+      "name": "get_hosted_agents_health",
+      "description": "Check whether the hosted-agents service is available.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_hosted_agent_plans",
+      "description": "Get the hosted-agent plans, runtime presets and defaults available to the account.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "list_hosted_agents",
+      "description": "List the account's hosted agents with status, runtime type, plan and model.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "create_hosted_agent",
+      "description": "Create a private hosted agent (OpenClaw or Hermes runtime) on a plan. Creates a billable resource.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "agent_type": {
+            "enum": [
+              "openclaw",
+              "hermes"
+            ],
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "plan_slug": {
+            "type": "string"
+          },
+          "default_provider": {
+            "enum": [
+              "empirio",
+              "poe",
+              "custom"
+            ],
+            "default": "empirio",
+            "type": "string"
+          },
+          "default_model": {
+            "type": "string"
+          },
+          "config": {
+            "description": "Non-secret agent configuration.",
+            "type": "object",
+            "additionalProperties": true
+          },
+          "import_config": {
+            "description": "Existing OpenClaw or Hermes Agent config to import.",
+            "anyOf": [
+              {
+                "type": "object",
+                "additionalProperties": true
+              },
+              {
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "agent_type"
+        ]
+      }
+    },
+    {
+      "name": "get_hosted_agent",
+      "description": "Get one hosted agent's status, configuration and connection details.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "instance_id": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "instance_id"
+        ]
+      }
+    },
+    {
+      "name": "delete_hosted_agent",
+      "description": "Destroy a hosted agent, its storage and its channels, and stop its charges.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "instance_id": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "instance_id"
+        ]
+      }
+    },
+    {
+      "name": "rename_hosted_agent",
+      "description": "Change a hosted agent's display name.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "instance_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "instance_id",
+          "name"
+        ]
+      }
+    },
+    {
+      "name": "hosted_agent_action",
+      "description": "Start, stop, restart, or refresh a hosted agent's runtime.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "instance_id": {
+            "type": "string"
+          },
+          "action": {
+            "enum": [
+              "start",
+              "stop",
+              "restart",
+              "refresh"
+            ],
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "instance_id",
+          "action"
+        ]
+      }
+    },
+    {
+      "name": "message_hosted_agent",
+      "description": "Send chat messages to a running hosted agent and return its reply. The agent may use its connected tools. Uses credits.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "instance_id": {
+            "type": "string"
+          },
+          "messages": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "instance_id",
+          "messages"
+        ]
+      }
+    },
+    {
+      "name": "list_hosted_agent_integrations",
+      "description": "List the messaging channels and integrations connected to a hosted agent.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "instance_id": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "instance_id"
+        ]
+      }
+    },
+    {
+      "name": "save_hosted_agent_integration",
+      "description": "Connect or update a messaging channel or integration (for example telegram, discord, slack) on a hosted agent.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "instance_id": {
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "poe_api_key",
+              "telegram",
+              "discord",
+              "slack",
+              "matrix",
+              "mattermost",
+              "msteams"
+            ],
+            "type": "string"
+          },
+          "secret": {
+            "description": "Integration secret, API key, token, or webhook credential.",
+            "type": "string"
+          },
+          "config": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "instance_id",
+          "kind"
+        ]
+      }
+    },
+    {
+      "name": "disconnect_hosted_agent_integration",
+      "description": "Disconnect a messaging channel or integration from a hosted agent.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "instance_id": {
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "poe",
+              "telegram",
+              "discord",
+              "slack",
+              "matrix",
+              "mattermost",
+              "msteams",
+              "whatsapp"
+            ],
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "instance_id",
+          "kind"
+        ]
+      }
+    },
+    {
+      "name": "set_hosted_agent_channel_behavior",
+      "description": "Set how a hosted agent behaves on one messaging channel (for example reply rules).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "instance_id": {
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "telegram",
+              "discord",
+              "slack",
+              "matrix",
+              "mattermost",
+              "msteams",
+              "whatsapp"
+            ],
+            "type": "string"
+          },
+          "behavior": {
+            "description": "Per-channel chat signal settings. `streaming` controls live reply preview on supported messaging channels, not model API streaming.",
+            "type": "object",
+            "properties": {
+              "reactions": {
+                "description": "Whether the agent sends lightweight processing reactions.",
+                "default": true,
+                "type": "boolean"
+              },
+              "reaction_level": {
+                "description": "How actively the agent uses platform reactions while working.",
+                "enum": [
+                  false,
+                  "ack",
+                  "minimal",
+                  "extensive"
+                ],
+                "default": "minimal",
+                "type": "string"
+              },
+              "typing": {
+                "description": "Whether supported platforms should show typing while the agent is working.",
+                "default": true,
+                "type": "boolean"
+              },
+              "read_receipts": {
+                "description": "Whether supported platforms should send read receipts. Telegram bots do not expose read receipts.",
+                "default": false,
+                "type": "boolean"
+              },
+              "streaming": {
+                "description": "Whether supported channels should show live reply previews with platform-native edit or draft preview support where available.",
+                "default": false,
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "instance_id",
+          "kind"
+        ]
+      }
+    },
+    {
+      "name": "set_hosted_agent_model",
+      "description": "Switch the model or provider a hosted agent uses.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "instance_id": {
+            "type": "string"
+          },
+          "provider": {
+            "enum": [
+              "empirio",
+              "poe",
+              "custom"
+            ],
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          },
+          "custom_provider": {
+            "description": "Required when provider is custom. The public HTTPS base URL, model, API key, and protocol of your endpoint.",
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "instance_id",
+          "provider",
+          "model"
+        ]
+      }
+    },
+    {
+      "name": "set_hosted_agent_access",
+      "description": "Set the access mode and allow list for who can message a hosted agent on its channels.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "instance_id": {
+            "type": "string"
+          },
+          "kind": {
+            "description": "Optional connected channel kind to update when sent in the JSON body.",
+            "enum": [
+              "telegram",
+              "discord",
+              "slack",
+              "matrix",
+              "mattermost",
+              "msteams",
+              "whatsapp"
+            ],
+            "type": "string"
+          },
+          "mode": {
+            "enum": [
+              "open",
+              "restricted"
+            ],
+            "type": "string"
+          },
+          "allow": {
+            "description": "Per-channel allowlist of messaging IDs, e.g. { \"telegram\": [\"123456\"] }.",
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "instance_id",
+          "mode"
+        ]
+      }
+    },
+    {
+      "name": "list_hosted_agent_skills",
+      "description": "List the skills installed on a hosted agent.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "instance_id": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "instance_id"
+        ]
+      }
+    },
+    {
+      "name": "add_hosted_agent_skill",
+      "description": "Install a catalog skill (by slug) or a custom skill on a hosted agent.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "instance_id": {
+            "type": "string"
+          },
+          "slug": {
+            "description": "A skill ref (clawhub:, hermes:, ocgit:, or url:).",
+            "type": "string"
+          },
+          "custom": {
+            "description": "A pasted skill: name plus SKILL.md body.",
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "instance_id"
+        ]
+      }
+    },
+    {
+      "name": "remove_hosted_agent_skill",
+      "description": "Uninstall a skill from a hosted agent.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "instance_id": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string",
+            "description": "The skill ref to remove."
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "instance_id",
+          "slug"
+        ]
+      }
+    },
+    {
+      "name": "list_hosted_agent_mcp_connectors",
+      "description": "List the remote MCP connectors attached to a hosted agent.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "instance_id": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "instance_id"
+        ]
+      }
+    },
+    {
+      "name": "add_hosted_agent_mcp_connector",
+      "description": "Attach a remote MCP server to a hosted agent so the agent can use its tools.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "instance_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "url": {
+            "description": "A public HTTPS remote MCP server URL.",
+            "type": "string"
+          },
+          "transport": {
+            "enum": [
+              "streamable-http",
+              "sse"
+            ],
+            "type": "string"
+          },
+          "header_name": {
+            "type": "string"
+          },
+          "header_value": {
+            "type": "string"
+          },
+          "tool_include": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "instance_id",
+          "name",
+          "url"
+        ]
+      }
+    },
+    {
+      "name": "remove_hosted_agent_mcp_connector",
+      "description": "Detach a remote MCP connector from a hosted agent.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "instance_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string",
+            "description": "The connector name to remove."
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "instance_id",
+          "name"
+        ]
+      }
+    },
+    {
+      "name": "edit_image",
+      "description": "Edit an existing image with an instruction using an image-edit model. Returns signed output URLs or a job_id for the running job. Uses credits.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "model": {
+            "description": "Image-edit model id (default `step-image-edit-2`).",
+            "type": "string"
+          },
+          "prompt": {
+            "description": "The edit instruction.",
+            "type": "string"
+          },
+          "image": {
+            "description": "The https URL of the image to edit.",
+            "type": "string"
+          },
+          "parameters": {
+            "type": "object",
+            "description": "Extra request fields passed through unchanged. Use get_model to see the supported parameter names, ranges, and defaults for the chosen model.",
+            "additionalProperties": true
+          },
+          "wait_seconds": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 50,
+            "description": "Seconds to wait for the result before returning a job_id you can poll with get_job (default 40, max 50)."
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "prompt",
+          "image"
+        ]
+      }
+    },
+    {
+      "name": "get_hosted_agent_stats",
+      "description": "Get activity counts for a hosted agent.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "instance_id": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "instance_id"
+        ]
+      }
+    },
+    {
+      "name": "list_hosted_agent_poe_models",
+      "description": "List the models available through the Poe account connected to a hosted agent.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "instance_id": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "instance_id"
+        ]
+      }
+    },
+    {
+      "name": "search",
+      "description": "Search the EmpirioLabs model catalog and documentation. Returns result ids for fetch: model:<slug> for a model, doc:<page> for a documentation page.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Search terms."
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "query"
+        ]
+      }
+    },
+    {
+      "name": "fetch",
+      "description": "Fetch the full text of a search result by id (model:<slug> or doc:<page>).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "A result id returned by search."
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "get_platform_status",
+      "description": "Check whether the EmpirioLabs API and its models are currently up, with per-model availability.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      }
+    }
+  ],
+  "prompts": [
+    {
+      "name": "choose_model",
+      "description": "Compare EmpirioLabs models for a task and recommend one, with a cheaper fallback and final prices."
+    },
+    {
+      "name": "research_with_citations",
+      "description": "Answer a question from live web research and cite every source."
+    },
+    {
+      "name": "generate_media",
+      "description": "Create an image, video, audio track or 3D asset from a description and return the finished files."
+    },
+    {
+      "name": "deploy_gpu_workload",
+      "description": "Rent a GPU on EmpirioLabs GPU Cloud, start a workload on it and report the endpoints and hourly cost."
+    },
+    {
+      "name": "spend_report",
+      "description": "Summarise the account balance, recent usage and everything that is still running and billing."
+    }
+  ]
+}
