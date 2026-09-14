@@ -3,7 +3,7 @@
   "name": "ai.empiriolabs/mcp",
   "title": "EmpirioLabs AI",
   "description": "Every EmpirioLabs model and platform feature as tools: chat, media, search, jobs, GPU Cloud, agents.",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "websiteUrl": "https://docs.empiriolabs.ai/mcp",
   "icons": [
     {
@@ -11,24 +11,14 @@
       "mimeType": "image/png",
       "sizes": [
         "512x512"
-      ],
-      "theme": "dark"
+      ]
     },
     {
       "src": "https://empiriolabs.ai/images/icon-dark-1024.png",
       "mimeType": "image/png",
       "sizes": [
         "1024x1024"
-      ],
-      "theme": "dark"
-    },
-    {
-      "src": "https://empiriolabs.ai/images/icon-512.png",
-      "mimeType": "image/png",
-      "sizes": [
-        "512x512"
-      ],
-      "theme": "light"
+      ]
     }
   ],
   "remotes": [

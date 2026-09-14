@@ -4,13 +4,13 @@
 
 # EmpirioLabs AI MCP server
 
-Remote [Model Context Protocol](https://modelcontextprotocol.io) server for [EmpirioLabs AI](https://empiriolabs.ai). It lets any MCP client run the whole platform as tools: chat with more than 180 text and multimodal models, generate images, video, music, speech, 3D assets and transcripts, run web search and research with citations, start long-running agent tasks, submit batch jobs, deploy and manage GPU Cloud instances, clusters and volumes, and create hosted agents. It is a remote server, so there is nothing to install.
+Remote [Model Context Protocol](https://modelcontextprotocol.io) server for [EmpirioLabs AI](https://empiriolabs.ai). Run 180+ AI models, image, video and speech generation, web search, batch jobs, GPU Cloud and hosted agents as tools with your EmpirioLabs account. It is a remote server, so there is nothing to install.
 
 | | |
 |---|---|
 | Server URL | `https://mcp.empiriolabs.ai/mcp` (Streamable HTTP) |
 | Authentication | OAuth 2.1 (sign in with your EmpirioLabs account) or an EmpirioLabs API key as a bearer token |
-| Registry name | `ai.empiriolabs/mcp` in the [official MCP Registry](https://registry.modelcontextprotocol.io) |
+| Registry name | `ai.empiriolabs/mcp` in the [official MCP Registry](https://registry.modelcontextprotocol.io), version 1.2.0 |
 | Documentation | https://docs.empiriolabs.ai/mcp |
 | Support | support@empiriolabs.ai |
 
@@ -30,7 +30,7 @@ Claude Code:
 claude mcp add --transport http empiriolabs https://mcp.empiriolabs.ai/mcp
 ```
 
-Run `/mcp` inside Claude Code to complete the sign-in the first time.
+Run `/mcp` inside Claude Code to complete the sign-in the first time. The repository is also a Claude Code plugin (`.claude-plugin/plugin.json`), so it can be installed from a plugin marketplace.
 
 ### ChatGPT
 
@@ -71,20 +71,20 @@ curl "https://mcp.empiriolabs.ai/mcp" \
 
 ## Tools
 
-78 tools in ten toolsets. The complete reference with every parameter is on the [documentation page](https://docs.empiriolabs.ai/mcp).
+78 tools in 10 toolsets. The complete reference with every parameter is on the [documentation page](https://docs.empiriolabs.ai/mcp).
 
 | Toolset | What it covers |
 |---|---|
-| Models | Browse the catalog, model schemas, prices and platform status |
-| Text | Chat completions, embeddings, reranking, image analysis, AI-text detection |
-| Search | Web search, grounded answers and multi-step research with citations |
-| Media | Image, video, 3D, music, speech and transcription, plus generation templates and Compose recipes |
-| Jobs | Asynchronous job status and results |
-| Agents | Long-running agent tasks |
-| Account | Credit balance and usage history |
-| Batch | Batch files and batch runs |
-| GPU Cloud | GPU types, instances, clusters, volumes and workloads |
-| Hosted Agents | Private hosted agents, channels, skills and connectors |
+| Models | Browse the model catalog, prices, capabilities, and parameters |
+| Text | Run chat, embeddings, reranking, and AI text detection (uses credits) |
+| Search | Run web search, grounded answers, and research (uses credits) |
+| Media | Generate and edit images, video, audio, speech, transcription, and 3D (uses credits) |
+| Jobs | Check, wait for, and cancel generation jobs |
+| Agents | Run and manage agent tasks (uses credits) |
+| Account | Read usage history and the current balance |
+| Batch | Upload batch files and manage batch jobs (uses credits) |
+| GPU Cloud | Deploy and manage GPU instances, clusters, and volumes (billable) |
+| Hosted Agents | Create and manage hosted agents (billable) |
 
 ### Profiles
 
@@ -96,9 +96,21 @@ Profiles expose a subset of toolsets at a shorter URL:
 | `https://mcp.empiriolabs.ai/mcp/inference` | models, text, search, jobs, account |
 | `https://mcp.empiriolabs.ai/mcp/media` | models, media, jobs, account |
 | `https://mcp.empiriolabs.ai/mcp/cloud` | models, account, gpu, hosted_agents |
-| `https://mcp.empiriolabs.ai/mcp/no-media` | everything except media |
+| `https://mcp.empiriolabs.ai/mcp/no-media` | models, text, search, jobs, agents, account, batch, gpu, hosted_agents |
 
 Combine toolsets with `+`, for example `https://mcp.empiriolabs.ai/mcp/models+text+jobs`.
+
+### Prompts
+
+Ready-made requests that chain several tools; clients that support MCP prompts list them next to the tools.
+
+| Prompt | What it does | Arguments |
+|---|---|---|
+| `choose_model` | Compare EmpirioLabs models for a task and recommend one, with a cheaper fallback and final prices. | task, modality (optional), priority (optional) |
+| `research_with_citations` | Answer a question from live web research and cite every source. | question, depth (optional) |
+| `generate_media` | Create an image, video, audio track or 3D asset from a description and return the finished files. | description, kind (optional), model (optional) |
+| `deploy_gpu_workload` | Rent a GPU on EmpirioLabs GPU Cloud, start a workload on it and report the endpoints and hourly cost. | workload, gpu (optional), max_hourly_price (optional) |
+| `spend_report` | Summarise the account balance, recent usage and everything that is still running and billing. | period (optional) |
 
 ## Access and privacy
 
@@ -108,4 +120,4 @@ Combine toolsets with `+`, for example `https://mcp.empiriolabs.ai/mcp/models+te
 
 ## About this repository
 
-This repository holds the public listing material for the hosted server: the registry `server.json`, the icons, and the install notes. The server itself is operated by EmpirioLabs.ai LLC at `mcp.empiriolabs.ai`.
+This repository holds the public listing material for the hosted server: the registry `server.json`, the LobeHub and Claude plugin manifests, the icons, and the install notes. Every file that describes the tool surface is generated from the server's own definition, so it always matches what `https://mcp.empiriolabs.ai/mcp` serves. The server itself is operated by EmpirioLabs.ai LLC.
