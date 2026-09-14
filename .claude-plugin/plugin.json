@@ -1,0 +1,21 @@
+{
+  "name": "empiriolabs-ai",
+  "version": "1.2.0",
+  "description": "Run 180+ AI models, image, video and speech generation, web search and research with citations, batch jobs, GPU Cloud and hosted agents from Claude through the EmpirioLabs AI remote MCP server.",
+  "author": {
+    "name": "EmpirioLabs AI",
+    "email": "support@empiriolabs.ai",
+    "url": "https://empiriolabs.ai"
+  },
+  "homepage": "https://docs.empiriolabs.ai/mcp",
+  "repository": "https://github.com/EmpirioLabs-AI/mcp",
+  "keywords": [
+    "mcp",
+    "ai-models",
+    "image-generation",
+    "video-generation",
+    "web-search",
+    "gpu-cloud",
+    "agents"
+  ]
+}
