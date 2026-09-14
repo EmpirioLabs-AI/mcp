@@ -57,6 +57,15 @@ Remote servers are configured with a URL. Sign in through OAuth when the editor 
 
 VS Code reads the same shape from `.vscode/mcp.json` with a `servers` key and `"type": "http"`. Codex CLI: `codex mcp add empiriolabs --url https://mcp.empiriolabs.ai/mcp`. Gemini CLI and Windsurf accept the JSON block above in their MCP settings. Cline: see [llms-install.md](llms-install.md).
 
+### Grok, Perplexity, Le Chat and Gemini
+
+These assistants take the server as a custom connector; paste `https://mcp.empiriolabs.ai/mcp` and sign in when asked.
+
+- **Grok**: open `grok.com/connectors`, choose **New Connector**, then **Custom**, and enter the URL.
+- **Perplexity**: open **Settings**, then **Connectors**, choose **Custom connector**, then **Remote**, enter the URL with the **Streamable HTTP** transport and **OAuth 2.0**.
+- **Le Chat**: open **Connectors**, choose **Add Connector**, then the **Custom MCP Connector** tab, give it a name and enter the URL.
+- **Gemini**: open **Settings & help**, then **Connected Apps**, and add a custom app with the URL.
+
 ### Any HTTP client
 
 The server speaks JSON-RPC over `POST https://mcp.empiriolabs.ai/mcp`. Send `Authorization: Bearer <API key or OAuth access token>` and `Accept: application/json, text/event-stream` on every request.
