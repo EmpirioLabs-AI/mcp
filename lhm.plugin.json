@@ -24,13 +24,13 @@
   "tools": [
     {
       "name": "list_models",
-      "description": "List EmpirioLabs models with provider, modality, endpoints and final prices. Filter by free-text query, modality (text, image, video, audio, multimodal, 3D), category, provider, or endpoint path.",
+      "description": "List EmpirioLabs models with author, modality, endpoints and final prices. Filter by free-text query, modality (text, image, video, audio, multimodal, 3D), category, author, or endpoint path.",
       "inputSchema": {
         "type": "object",
         "properties": {
           "query": {
             "type": "string",
-            "description": "Free-text filter matched against id, name, provider, description, features and aliases."
+            "description": "Free-text filter matched against id, name, author, description, features and aliases."
           },
           "modality": {
             "type": "string",
@@ -48,9 +48,13 @@
             "type": "string",
             "description": "Filter by catalog category such as text, image, video, audio, research, transcription, embedding, reranker, 3d, tools."
           },
+          "author": {
+            "type": "string",
+            "description": "Filter by author slug (for example alibaba, deepseek, zhipu)."
+          },
           "provider": {
             "type": "string",
-            "description": "Filter by provider slug (for example alibaba, deepseek, zhipu)."
+            "description": "Alias of author, still accepted."
           },
           "endpoint": {
             "type": "string",

@@ -1,0 +1,118 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "EmpirioLabs AI",
+    "description": "Run 180+ AI models, image, video and speech generation, web search, batch jobs, GPU Cloud and hosted agents as tools with your EmpirioLabs account.",
+    "version": "1.2",
+    "contact": {
+      "name": "EmpirioLabs AI Support",
+      "url": "https://empiriolabs.ai",
+      "email": "support@empiriolabs.ai"
+    }
+  },
+  "host": "mcp.empiriolabs.ai",
+  "basePath": "/",
+  "schemes": [
+    "https"
+  ],
+  "consumes": [],
+  "produces": [],
+  "paths": {
+    "/mcp": {
+      "post": {
+        "summary": "Invoke MCP server",
+        "description": "Sends a Model Context Protocol request to the EmpirioLabs AI server and returns its response.",
+        "operationId": "InvokeMCP",
+        "x-ms-agentic-protocol": "mcp-streamable-1.0",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success.",
+            "schema": {
+              "type": "object"
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "summary": "Check service status",
+        "description": "Returns the current status of the EmpirioLabs AI service.",
+        "operationId": "CheckHealth",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success.",
+            "schema": {
+              "type": "object"
+            }
+          }
+        },
+        "x-ms-visibility": "important"
+      }
+    }
+  },
+  "definitions": {},
+  "parameters": {},
+  "responses": {},
+  "securityDefinitions": {
+    "oauth2-auth": {
+      "type": "oauth2",
+      "flow": "accessCode",
+      "authorizationUrl": "https://platform.empiriolabs.ai/dashboard/oauth/authorize",
+      "tokenUrl": "https://platform.empiriolabs.ai/api/oauth/token",
+      "scopes": {
+        "models": "Models",
+        "text": "Text",
+        "search": "Search",
+        "media": "Media",
+        "jobs": "Jobs",
+        "agents": "Agents",
+        "account": "Account",
+        "batch": "Batch",
+        "gpu": "GPU Cloud",
+        "hosted_agents": "Hosted Agents"
+      }
+    }
+  },
+  "security": [
+    {
+      "oauth2-auth": [
+        "models",
+        "text",
+        "search",
+        "media",
+        "jobs",
+        "agents",
+        "account",
+        "batch",
+        "gpu",
+        "hosted_agents"
+      ]
+    }
+  ],
+  "tags": [],
+  "x-ms-connector-metadata": [
+    {
+      "propertyName": "Website",
+      "propertyValue": "https://empiriolabs.ai"
+    },
+    {
+      "propertyName": "Privacy policy",
+      "propertyValue": "https://empiriolabs.ai/privacy-policy"
+    },
+    {
+      "propertyName": "Categories",
+      "propertyValue": "AI;Productivity"
+    }
+  ]
+}

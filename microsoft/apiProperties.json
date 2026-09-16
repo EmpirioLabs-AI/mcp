@@ -1,0 +1,56 @@
+{
+  "properties": {
+    "connectionParameters": {
+      "token": {
+        "type": "oauthSetting",
+        "oAuthSettings": {
+          "identityProvider": "oauth2",
+          "clientId": "mcp_client_BKJ3fLgz8rL2mQR8uED8bpKu",
+          "scopes": [
+            "models",
+            "text",
+            "search",
+            "media",
+            "jobs",
+            "agents",
+            "account",
+            "batch",
+            "gpu",
+            "hosted_agents"
+          ],
+          "redirectMode": "GlobalPerConnector",
+          "redirectUrl": "https://global.consent.azure-apim.net/redirect/empiriolabs-20ai-5ff06119aa841cd7d7-5f7bc5dc5b1e4654ec",
+          "properties": {
+            "IsFirstParty": "False",
+            "IsOnbehalfofLoginSupported": false
+          },
+          "customParameters": {
+            "AuthorizationUrl": {
+              "value": "https://platform.empiriolabs.ai/dashboard/oauth/authorize"
+            },
+            "TokenUrl": {
+              "value": "https://platform.empiriolabs.ai/api/oauth/token"
+            },
+            "RefreshUrl": {
+              "value": "https://platform.empiriolabs.ai/api/oauth/token"
+            }
+          }
+        },
+        "uiDefinition": {
+          "displayName": "EmpirioLabs account",
+          "description": "Sign in with your EmpirioLabs account and choose what the agent may use.",
+          "tooltip": "Sign in with your EmpirioLabs account.",
+          "constraints": {
+            "required": "true",
+            "hidden": "false"
+          }
+        }
+      }
+    },
+    "iconBrandColor": "#000815",
+    "capabilities": [],
+    "publisher": "EmpirioLabs.ai LLC",
+    "stackOwner": "EmpirioLabs.ai LLC",
+    "policyTemplateInstances": []
+  }
+}

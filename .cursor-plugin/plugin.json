@@ -1,0 +1,20 @@
+{
+  "name": "empiriolabs-ai",
+  "version": "1.2.0",
+  "description": "Run 180+ AI models, image, video and speech generation, web search, batch jobs, GPU Cloud and hosted agents as tools with your EmpirioLabs account.",
+  "author": {
+    "name": "EmpirioLabs AI",
+    "email": "support@empiriolabs.ai"
+  },
+  "keywords": [
+    "ai-models",
+    "llm",
+    "image-generation",
+    "video-generation",
+    "speech",
+    "web-search",
+    "research",
+    "batch"
+  ],
+  "logo": "icon-dark-512.png"
+}
