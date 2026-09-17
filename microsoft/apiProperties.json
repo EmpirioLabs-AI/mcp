@@ -5,7 +5,7 @@
         "type": "oauthSetting",
         "oAuthSettings": {
           "identityProvider": "oauth2",
-          "clientId": "mcp_client_BKJ3fLgz8rL2mQR8uED8bpKu",
+          "clientId": "mcp_client__KLMWuPxt8gxLR-wCtXW4GIx",
           "scopes": [
             "models",
             "text",
