@@ -2,7 +2,7 @@
   "swagger": "2.0",
   "info": {
     "title": "EmpirioLabs AI",
-    "description": "Run 180+ AI models, image, video and speech generation, web search, batch jobs, GPU Cloud and hosted agents as tools with your EmpirioLabs account.",
+    "description": "EmpirioLabs AI gives your agents and flows one connection to 180+ AI models and the tools around them: chat, reasoning and embedding models, image, video, audio, speech and 3D generation and editing, web search and researched answers with citations, batch jobs, GPU instances and hosted agents. Tools are discovered at runtime over the Model Context Protocol, so new models reach your agents without a connector change. Sign in with an EmpirioLabs account and pick the areas it may use.",
     "version": "1.2",
     "contact": {
       "name": "EmpirioLabs AI Support",

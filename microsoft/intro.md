@@ -18,6 +18,7 @@ EmpirioLabs.ai LLC
 | Operation | Description |
 |---|---|
 | Invoke MCP server | Sends a Model Context Protocol request to `https://mcp.empiriolabs.ai/mcp` and returns the response. Tools are discovered dynamically. |
+| Check service status | Returns the current status of the EmpirioLabs AI service. Use it in a cloud flow to confirm the connection works. |
 
 The tools are grouped into these areas. The sign-in screen lets you choose which areas the agent may use.
 
