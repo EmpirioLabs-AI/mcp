@@ -57,6 +57,29 @@ Remote servers are configured with a URL. Sign in through OAuth when the editor 
 
 VS Code reads the same shape from `.vscode/mcp.json` with a `servers` key and `"type": "http"`. Codex CLI: `codex mcp add empiriolabs --url https://mcp.empiriolabs.ai/mcp`. Gemini CLI and Windsurf accept the JSON block above in their MCP settings. Cline: see [llms-install.md](llms-install.md).
 
+### Google Antigravity
+
+Antigravity names the endpoint field `serverUrl`, not `url`. Put this in
+`~/.gemini/config/mcp_config.json`, or in `plugins/<name>/mcp_config.json` to
+ship it with a plugin:
+
+```json
+{
+  "mcpServers": {
+    "empiriolabs": {
+      "serverUrl": "https://mcp.empiriolabs.ai/mcp",
+      "headers": {
+        "Authorization": "Bearer sk-empiriolabs-your_key_here"
+      }
+    }
+  }
+}
+```
+
+A server that fails to connect is silently absent from Antigravity's tool list
+rather than reported as an error, so check the key first if the tools do not
+appear.
+
 ### Grok, Perplexity, Le Chat and Gemini
 
 These assistants take the server as a custom connector; paste `https://mcp.empiriolabs.ai/mcp` and sign in when asked.
