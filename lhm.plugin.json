@@ -860,15 +860,15 @@
         "properties": {
           "model": {
             "type": "string",
-            "description": "TTS model whose voice catalog to return, for example `qwen-audio-3-0-tts` or `inworld-tts-max`."
+            "description": "TTS model whose voice catalog to return, for example `qwen-audio-3-0-tts`, `inworld-tts-max`, or `gemini-3-8-flash-tts`."
           },
           "language": {
             "type": "string",
-            "description": "Filter by language, matched case-insensitively as a substring, for example `english`. Supported by Qwen Audio 3.0 TTS."
+            "description": "Filter by language. Qwen Audio 3.0 TTS matches it case-insensitively as a substring of the language name, for example `english`. Gemini 3.8 Flash TTS and Flash-Lite TTS match a BCP-47 locale or its language prefix, for example `fr-CA` or `fr`."
           },
           "gender": {
             "type": "string",
-            "description": "Filter by voice gender, for example `female`. Supported by Qwen Audio 3.0 TTS."
+            "description": "Filter by voice gender, for example `female`. Supported by Qwen Audio 3.0 TTS and Gemini 3.8 Flash TTS and Flash-Lite TTS."
           },
           "tier": {
             "type": "string",
@@ -876,7 +876,15 @@
           },
           "q": {
             "type": "string",
-            "description": "Free-text search across voice id, name, trait, and use case. Supported by Qwen Audio 3.0 TTS."
+            "description": "Free-text search. Qwen Audio 3.0 TTS searches voice id, name, trait, and use case; Gemini 3.8 Flash TTS and Flash-Lite TTS search id, name, accent, persona, context, and description."
+          },
+          "pitch": {
+            "type": "string",
+            "description": "Filter by voice pitch: `low`, `medium`, or `high`. Supported by Gemini 3.8 Flash TTS and Flash-Lite TTS."
+          },
+          "multilingual": {
+            "type": "boolean",
+            "description": "`true` returns only the 30 voices that speak every supported language; `false` excludes them. Supported by Gemini 3.8 Flash TTS and Flash-Lite TTS."
           }
         },
         "additionalProperties": false,
