@@ -1974,6 +1974,7 @@
             "enum": [
               "empirio",
               "poe",
+              "openrouter",
               "custom"
             ],
             "default": "empirio",
@@ -2135,6 +2136,7 @@
           },
           "kind": {
             "enum": [
+              "openrouter_api_key",
               "poe_api_key",
               "telegram",
               "discord",
@@ -2172,6 +2174,7 @@
           },
           "kind": {
             "enum": [
+              "openrouter",
               "poe",
               "telegram",
               "discord",
@@ -2271,6 +2274,7 @@
             "enum": [
               "empirio",
               "poe",
+              "openrouter",
               "custom"
             ],
             "type": "string"
@@ -2533,6 +2537,22 @@
     {
       "name": "list_hosted_agent_poe_models",
       "description": "List the models available through the Poe account connected to a hosted agent.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "instance_id": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "instance_id"
+        ]
+      }
+    },
+    {
+      "name": "list_hosted_agent_openrouter_models",
+      "description": "List the models a hosted agent can use through its connected OpenRouter account.",
       "inputSchema": {
         "type": "object",
         "properties": {
