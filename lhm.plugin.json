@@ -2136,8 +2136,8 @@
           },
           "kind": {
             "enum": [
-              "openrouter_api_key",
               "poe_api_key",
+              "openrouter_api_key",
               "telegram",
               "discord",
               "slack",
@@ -2174,8 +2174,8 @@
           },
           "kind": {
             "enum": [
-              "openrouter",
               "poe",
+              "openrouter",
               "telegram",
               "discord",
               "slack",
