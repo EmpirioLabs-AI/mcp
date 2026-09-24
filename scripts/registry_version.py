@@ -3,7 +3,9 @@
 
 The registry keeps every published version permanently and refuses to publish
 the same version twice, so the workflow publishes only when this reports a new
-one. It never publishes by itself and needs no credential.
+one. It never publishes by itself and needs no credential. It also refuses a
+server.json that does not name our server at our endpoint, because the
+workflow signs whatever this lets through with the domain key.
 """
 from __future__ import annotations
 
@@ -14,12 +16,19 @@ import sys
 import urllib.parse
 import urllib.request
 
+from follow_live_server import server_problem
+
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 REGISTRY = "https://registry.modelcontextprotocol.io/v0.1/servers"
 
 
 def main() -> int:
-    manifest = json.loads((ROOT / "server.json").read_text(encoding="utf-8"))
+    text = (ROOT / "server.json").read_text(encoding="utf-8")
+    problem = server_problem(text)
+    if problem:
+        print(f"refusing to publish: {problem}")
+        return 1
+    manifest = json.loads(text)
     name, version = manifest["name"], manifest["version"]
     url = f"{REGISTRY}/{urllib.parse.quote(name, safe='')}/versions"
     request = urllib.request.Request(url, headers={"User-Agent": "EmpirioLabs-listing-follow/1.0"})

@@ -3,6 +3,10 @@ name: Follow the live MCP server
 # The EmpirioLabs MCP server follows the EmpirioLabs docs by itself and renders
 # this repository's listing at https://mcp.empiriolabs.ai/listing.json. This job
 # mirrors it, then refreshes the stores that keep their own copy of the tools.
+#
+# Each secret reaches only the step that uses it, the checkout leaves no token
+# on disk, and the store CLIs are pinned and run outside the repository, so one
+# compromised tool or a tampered listing cannot reach another credential.
 
 on:
   schedule:
@@ -22,12 +26,18 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
-      SMITHERY_API_KEY: ${{ secrets.SMITHERY_API_KEY }}
-      LOBEHUB_CREDENTIALS_KEY: ${{ secrets.LOBEHUB_CREDENTIALS_KEY }}
-      LOBEHUB_CREDENTIALS_SEED: ${{ secrets.LOBEHUB_CREDENTIALS_SEED }}
-      MCP_REGISTRY_PRIVATE_KEY: ${{ secrets.MCP_REGISTRY_PRIVATE_KEY }}
+      # Whether each secret is configured; the values are set on their own steps.
+      HAS_SMITHERY: ${{ secrets.SMITHERY_API_KEY != '' }}
+      HAS_LOBEHUB: ${{ secrets.LOBEHUB_CREDENTIALS_KEY != '' }}
+      HAS_REGISTRY_KEY: ${{ secrets.MCP_REGISTRY_PRIVATE_KEY != '' }}
+      SMITHERY_CLI: "@smithery/cli@4.11.1"
+      LOBEHUB_CLI: "@lobehub/market-cli@0.0.41"
+      MCP_PUBLISHER_URL: https://github.com/modelcontextprotocol/registry/releases/download/v1.8.1/mcp-publisher_linux_amd64.tar.gz
+      MCP_PUBLISHER_SHA256: a06c9096dcb9727c13555b6be26c7effa707b01f06a4c561ba7a3635443cf2cc
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Mirror the listing from the live server
         id: mirror
@@ -35,36 +45,54 @@ jobs:
 
       - name: Commit and push the change
         if: steps.mirror.outputs.changed == 'true'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          TOOLS: ${{ steps.mirror.outputs.tools }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
-          git commit -m "Follow the live MCP server (${{ steps.mirror.outputs.tools }} tools)"
-          git push
+          git commit -m "Follow the live MCP server ($TOOLS tools)"
+          auth=$(printf 'x-access-token:%s' "$GITHUB_TOKEN" | base64 -w0)
+          echo "::add-mask::$auth"
+          git -c http.https://github.com/.extraheader="AUTHORIZATION: basic $auth" push
 
       # The registry refuses a version it already holds, so this publishes only a
-      # new version in server.json. A manual run also signs in, which proves the
-      # domain key still matches https://empiriolabs.ai/.well-known/mcp-registry-auth.
+      # new version in server.json, and only one that names our endpoint. A manual
+      # run also signs in, which proves the domain key still matches
+      # https://empiriolabs.ai/.well-known/mcp-registry-auth.
       - name: Check the official MCP registry
         id: registry
         run: python3 scripts/registry_version.py
 
       - name: Publish to the official MCP registry
-        if: (steps.registry.outputs.publish == 'true' || github.event_name == 'workflow_dispatch') && env.MCP_REGISTRY_PRIVATE_KEY != ''
+        if: (steps.registry.outputs.publish == 'true' || github.event_name == 'workflow_dispatch') && env.HAS_REGISTRY_KEY == 'true'
+        env:
+          MCP_REGISTRY_PRIVATE_KEY: ${{ secrets.MCP_REGISTRY_PRIVATE_KEY }}
+          PUBLISH: ${{ steps.registry.outputs.publish }}
         run: |
-          curl -fsSL https://github.com/modelcontextprotocol/registry/releases/download/v1.8.1/mcp-publisher_linux_amd64.tar.gz | tar xz mcp-publisher
-          ./mcp-publisher login http --domain empiriolabs.ai --private-key "$MCP_REGISTRY_PRIVATE_KEY"
-          if [ "${{ steps.registry.outputs.publish }}" = "true" ]; then
-            ./mcp-publisher publish
+          # The publisher keeps its sign-in token under HOME: give it a home of its
+          # own and delete it with the binary, before any store CLI runs.
+          work="$RUNNER_TEMP/mcp-publisher"
+          trap 'rm -rf "$work"' EXIT
+          mkdir -p "$work/home"
+          curl -fsSL "$MCP_PUBLISHER_URL" -o "$work/publisher.tar.gz"
+          echo "$MCP_PUBLISHER_SHA256  $work/publisher.tar.gz" | sha256sum -c -
+          tar xzf "$work/publisher.tar.gz" -C "$work" mcp-publisher
+          HOME="$work/home" "$work/mcp-publisher" login http --domain empiriolabs.ai --private-key "$MCP_REGISTRY_PRIVATE_KEY"
+          if [ "$PUBLISH" = "true" ]; then
+            HOME="$work/home" "$work/mcp-publisher" publish
           fi
-          rm -f mcp-publisher
 
       - name: Refresh Smithery
-        if: (steps.mirror.outputs.changed == 'true' || github.event_name == 'workflow_dispatch') && env.SMITHERY_API_KEY != ''
-        run: npx --yes @smithery/cli@latest mcp publish https://mcp.empiriolabs.ai/mcp -n empiriolabs-ai/mcp --config-schema '{"type":"object","properties":{},"additionalProperties":false}'
+        if: (steps.mirror.outputs.changed == 'true' || github.event_name == 'workflow_dispatch') && env.HAS_SMITHERY == 'true'
+        working-directory: ${{ runner.temp }}
+        env:
+          SMITHERY_API_KEY: ${{ secrets.SMITHERY_API_KEY }}
+        run: npx --yes "$SMITHERY_CLI" mcp publish https://mcp.empiriolabs.ai/mcp -n empiriolabs-ai/mcp --config-schema '{"type":"object","properties":{},"additionalProperties":false}'
 
       - name: Restore the LobeHub session
-        if: env.LOBEHUB_CREDENTIALS_KEY != ''
+        if: env.HAS_LOBEHUB == 'true'
         uses: actions/cache/restore@v4
         with:
           path: .lobehub-session.enc
@@ -72,18 +100,25 @@ jobs:
           restore-keys: lobehub-session-
 
       - name: Refresh LobeHub
-        if: env.LOBEHUB_CREDENTIALS_KEY != ''
+        if: env.HAS_LOBEHUB == 'true'
+        env:
+          LOBEHUB_CREDENTIALS_KEY: ${{ secrets.LOBEHUB_CREDENTIALS_KEY }}
+          LOBEHUB_CREDENTIALS_SEED: ${{ secrets.LOBEHUB_CREDENTIALS_SEED }}
+          CHANGED: ${{ steps.mirror.outputs.changed }}
         run: |
           python3 scripts/lobehub_session.py unpack
-          if [ "${{ steps.mirror.outputs.changed }}" = "true" ] || [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            npx --yes @lobehub/market-cli plugin update --dir .
+          status=0
+          if [ "$CHANGED" = "true" ] || [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ]; then
+            (cd "$RUNNER_TEMP" && npx --yes "$LOBEHUB_CLI" plugin update --dir "$GITHUB_WORKSPACE") || status=$?
           elif python3 scripts/lobehub_session.py due; then
-            npx --yes @lobehub/market-cli plugin list > /dev/null
+            (cd "$RUNNER_TEMP" && npx --yes "$LOBEHUB_CLI" plugin list > /dev/null) || status=$?
           fi
+          # LobeHub rotates the session on refresh: save it even if the CLI failed afterwards.
           python3 scripts/lobehub_session.py pack
+          exit $status
 
       - name: Save the LobeHub session
-        if: always() && env.LOBEHUB_CREDENTIALS_KEY != '' && hashFiles('.lobehub-session.enc') != ''
+        if: always() && env.HAS_LOBEHUB == 'true' && hashFiles('.lobehub-session.enc') != ''
         uses: actions/cache/save@v4
         with:
           path: .lobehub-session.enc
