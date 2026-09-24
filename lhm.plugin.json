@@ -2551,22 +2551,6 @@
       }
     },
     {
-      "name": "list_hosted_agent_openrouter_models",
-      "description": "List the models a hosted agent can use through its connected OpenRouter account.",
-      "inputSchema": {
-        "type": "object",
-        "properties": {
-          "instance_id": {
-            "type": "string"
-          }
-        },
-        "additionalProperties": false,
-        "required": [
-          "instance_id"
-        ]
-      }
-    },
-    {
       "name": "search",
       "description": "Search the EmpirioLabs model catalog and documentation. Returns result ids for fetch: model:<slug> for a model, doc:<page> for a documentation page.",
       "inputSchema": {
