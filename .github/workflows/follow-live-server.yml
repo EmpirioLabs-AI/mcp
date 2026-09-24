@@ -1,0 +1,71 @@
+name: Follow the live MCP server
+
+# The EmpirioLabs MCP server follows the EmpirioLabs docs by itself and renders
+# this repository's listing at https://mcp.empiriolabs.ai/listing.json. This job
+# mirrors it, then refreshes the stores that keep their own copy of the tools.
+
+on:
+  schedule:
+    - cron: "7,22,37,52 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: follow-live-server
+  cancel-in-progress: false
+
+jobs:
+  follow:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      SMITHERY_API_KEY: ${{ secrets.SMITHERY_API_KEY }}
+      LOBEHUB_CREDENTIALS_KEY: ${{ secrets.LOBEHUB_CREDENTIALS_KEY }}
+      LOBEHUB_CREDENTIALS_SEED: ${{ secrets.LOBEHUB_CREDENTIALS_SEED }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Mirror the listing from the live server
+        id: mirror
+        run: python3 scripts/follow_live_server.py
+
+      - name: Commit and push the change
+        if: steps.mirror.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Follow the live MCP server (${{ steps.mirror.outputs.tools }} tools)"
+          git push
+
+      - name: Refresh Smithery
+        if: steps.mirror.outputs.changed == 'true' && env.SMITHERY_API_KEY != ''
+        run: npx --yes @smithery/cli@latest mcp publish https://mcp.empiriolabs.ai/mcp -n empiriolabs-ai/mcp --config-schema '{"type":"object","properties":{},"additionalProperties":false}'
+
+      - name: Restore the LobeHub session
+        if: env.LOBEHUB_CREDENTIALS_KEY != ''
+        uses: actions/cache/restore@v4
+        with:
+          path: .lobehub-session.enc
+          key: lobehub-session-${{ github.run_id }}
+          restore-keys: lobehub-session-
+
+      - name: Refresh LobeHub
+        if: env.LOBEHUB_CREDENTIALS_KEY != ''
+        run: |
+          python3 scripts/lobehub_session.py unpack
+          if [ "${{ steps.mirror.outputs.changed }}" = "true" ] || [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            npx --yes @lobehub/market-cli plugin update --dir .
+          elif python3 scripts/lobehub_session.py due; then
+            npx --yes @lobehub/market-cli plugin list > /dev/null
+          fi
+          python3 scripts/lobehub_session.py pack
+
+      - name: Save the LobeHub session
+        if: always() && env.LOBEHUB_CREDENTIALS_KEY != '' && hashFiles('.lobehub-session.enc') != ''
+        uses: actions/cache/save@v4
+        with:
+          path: .lobehub-session.enc
+          key: lobehub-session-${{ github.run_id }}
