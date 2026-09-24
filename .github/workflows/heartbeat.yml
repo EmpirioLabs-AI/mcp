@@ -1,0 +1,23 @@
+name: Heartbeat
+
+# Starts the listing follow every 15 minutes. The documentation repository's
+# hourly sync starts it as well, so if GitHub ever stops this schedule after 60
+# days without a commit, only this heartbeat stops, never the follow itself.
+
+on:
+  schedule:
+    - cron: "7,22,37,52 * * * *"
+  workflow_dispatch:
+
+permissions:
+  actions: write
+
+jobs:
+  start:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Start the listing follow
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run follow-live-server.yml --repo "$GITHUB_REPOSITORY" --ref "$GITHUB_REF_NAME" -f refresh_stores=false

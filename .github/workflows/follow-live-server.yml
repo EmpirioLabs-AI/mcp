@@ -7,12 +7,18 @@ name: Follow the live MCP server
 # Each secret reaches only the step that uses it, the checkout leaves no token
 # on disk, and the store CLIs are pinned and run outside the repository, so one
 # compromised tool or a tampered listing cannot reach another credential.
+#
+# No schedule here: GitHub stops scheduled workflows in a public repository after
+# 60 days without a commit. heartbeat.yml and the documentation repository's
+# hourly sync start this workflow instead, so it never depends on one schedule.
 
 on:
-  schedule:
-    - cron: "7,22,37,52 * * * *"
-  # A manual run refreshes both stores even without a change.
   workflow_dispatch:
+    inputs:
+      refresh_stores:
+        description: Refresh Smithery and LobeHub and sign in to the registry even without a change
+        type: boolean
+        default: true
 
 permissions:
   contents: write
@@ -58,15 +64,15 @@ jobs:
           git -c http.https://github.com/.extraheader="AUTHORIZATION: basic $auth" push
 
       # The registry refuses a version it already holds, so this publishes only a
-      # new version in server.json, and only one that names our endpoint. A manual
-      # run also signs in, which proves the domain key still matches
+      # new version in server.json, and only one that names our endpoint. A run
+      # with refresh_stores also signs in, which proves the domain key still matches
       # https://empiriolabs.ai/.well-known/mcp-registry-auth.
       - name: Check the official MCP registry
         id: registry
         run: python3 scripts/registry_version.py
 
       - name: Publish to the official MCP registry
-        if: (steps.registry.outputs.publish == 'true' || github.event_name == 'workflow_dispatch') && env.HAS_REGISTRY_KEY == 'true'
+        if: (steps.registry.outputs.publish == 'true' || inputs.refresh_stores) && env.HAS_REGISTRY_KEY == 'true'
         env:
           MCP_REGISTRY_PRIVATE_KEY: ${{ secrets.MCP_REGISTRY_PRIVATE_KEY }}
           PUBLISH: ${{ steps.registry.outputs.publish }}
@@ -85,7 +91,7 @@ jobs:
           fi
 
       - name: Refresh Smithery
-        if: (steps.mirror.outputs.changed == 'true' || github.event_name == 'workflow_dispatch') && env.HAS_SMITHERY == 'true'
+        if: (steps.mirror.outputs.changed == 'true' || inputs.refresh_stores) && env.HAS_SMITHERY == 'true'
         working-directory: ${{ runner.temp }}
         env:
           SMITHERY_API_KEY: ${{ secrets.SMITHERY_API_KEY }}
@@ -105,10 +111,11 @@ jobs:
           LOBEHUB_CREDENTIALS_KEY: ${{ secrets.LOBEHUB_CREDENTIALS_KEY }}
           LOBEHUB_CREDENTIALS_SEED: ${{ secrets.LOBEHUB_CREDENTIALS_SEED }}
           CHANGED: ${{ steps.mirror.outputs.changed }}
+          REFRESH: ${{ inputs.refresh_stores }}
         run: |
           python3 scripts/lobehub_session.py unpack
           status=0
-          if [ "$CHANGED" = "true" ] || [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ]; then
+          if [ "$CHANGED" = "true" ] || [ "$REFRESH" = "true" ]; then
             (cd "$RUNNER_TEMP" && npx --yes "$LOBEHUB_CLI" plugin update --dir "$GITHUB_WORKSPACE") || status=$?
           elif python3 scripts/lobehub_session.py due; then
             (cd "$RUNNER_TEMP" && npx --yes "$LOBEHUB_CLI" plugin list > /dev/null) || status=$?
