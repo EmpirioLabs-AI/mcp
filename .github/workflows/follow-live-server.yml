@@ -25,6 +25,7 @@ jobs:
       SMITHERY_API_KEY: ${{ secrets.SMITHERY_API_KEY }}
       LOBEHUB_CREDENTIALS_KEY: ${{ secrets.LOBEHUB_CREDENTIALS_KEY }}
       LOBEHUB_CREDENTIALS_SEED: ${{ secrets.LOBEHUB_CREDENTIALS_SEED }}
+      MCP_REGISTRY_PRIVATE_KEY: ${{ secrets.MCP_REGISTRY_PRIVATE_KEY }}
     steps:
       - uses: actions/checkout@v4
 
@@ -40,6 +41,23 @@ jobs:
           git add -A
           git commit -m "Follow the live MCP server (${{ steps.mirror.outputs.tools }} tools)"
           git push
+
+      # The registry refuses a version it already holds, so this publishes only a
+      # new version in server.json. A manual run also signs in, which proves the
+      # domain key still matches https://empiriolabs.ai/.well-known/mcp-registry-auth.
+      - name: Check the official MCP registry
+        id: registry
+        run: python3 scripts/registry_version.py
+
+      - name: Publish to the official MCP registry
+        if: (steps.registry.outputs.publish == 'true' || github.event_name == 'workflow_dispatch') && env.MCP_REGISTRY_PRIVATE_KEY != ''
+        run: |
+          curl -fsSL https://github.com/modelcontextprotocol/registry/releases/download/v1.8.1/mcp-publisher_linux_amd64.tar.gz | tar xz mcp-publisher
+          ./mcp-publisher login http --domain empiriolabs.ai --private-key "$MCP_REGISTRY_PRIVATE_KEY"
+          if [ "${{ steps.registry.outputs.publish }}" = "true" ]; then
+            ./mcp-publisher publish
+          fi
+          rm -f mcp-publisher
 
       - name: Refresh Smithery
         if: (steps.mirror.outputs.changed == 'true' || github.event_name == 'workflow_dispatch') && env.SMITHERY_API_KEY != ''
