@@ -153,3 +153,5 @@ Ready-made requests that chain several tools; clients that support MCP prompts l
 ## About this repository
 
 This repository holds the public listing material for the hosted server: the registry `server.json`, the LobeHub and Claude plugin manifests, the icons, and the install notes. Every file that describes the tool surface is generated from the server's own definition, so it always matches what `https://mcp.empiriolabs.ai/mcp` serves. The server itself is operated by EmpirioLabs.ai LLC.
+
+The listing files are published under the MIT license (`LICENSE`). The EmpirioLabs name and logos are trademarks of EmpirioLabs.ai LLC and are not covered by it.

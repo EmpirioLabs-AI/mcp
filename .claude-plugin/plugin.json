@@ -9,6 +9,9 @@
   },
   "homepage": "https://docs.empiriolabs.ai/mcp",
   "repository": "https://github.com/EmpirioLabs-AI/mcp",
+  "license": "MIT",
+  "icon": "./icon-dark-512.png",
+  "privacyPolicyUrl": "https://empiriolabs.ai/privacy-policy",
   "keywords": [
     "mcp",
     "ai-models",
