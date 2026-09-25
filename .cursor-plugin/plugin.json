@@ -6,6 +6,9 @@
     "name": "EmpirioLabs AI",
     "email": "support@empiriolabs.ai"
   },
+  "homepage": "https://docs.empiriolabs.ai/mcp",
+  "repository": "https://github.com/EmpirioLabs-AI/mcp",
+  "license": "MIT",
   "keywords": [
     "ai-models",
     "llm",
