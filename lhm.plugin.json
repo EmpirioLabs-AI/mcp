@@ -1825,7 +1825,7 @@
     },
     {
       "name": "create_gpu_ssh_key",
-      "description": "Add an SSH public key to the account so it can connect to any running GPU instance with the instance's ssh.command. Send the public key, or generate: true to have a key pair created and returned once. Never send a private key.",
+      "description": "Add an SSH public key to the account so it can connect to any running GPU instance with the instance's ssh.command. Send the public key, or generate: true to have a key pair created and returned once (use that private key with -i for both hosts: ssh -i <key> -o ProxyCommand=\"ssh -i <key> -p <port> -W %h:%p ssh.empiriolabs.ai\" root@<instance_id>). Never send a private key.",
       "inputSchema": {
         "type": "object",
         "properties": {
