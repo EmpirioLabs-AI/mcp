@@ -1815,8 +1815,57 @@
       }
     },
     {
+      "name": "list_gpu_ssh_keys",
+      "description": "List the SSH public keys on the account. Any of them can connect to the account's running GPU instances.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "create_gpu_ssh_key",
+      "description": "Add an SSH public key to the account so it can connect to any running GPU instance with the instance's ssh.command. Send only the public key; never a private key.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "public_key": {
+            "description": "One ssh-ed25519 or ssh-rsa public key (RSA 2048 to 8192 bits), without options or line breaks. A trailing comment is used as the default name.",
+            "maxLength": 8192,
+            "type": "string"
+          },
+          "name": {
+            "description": "A label for the key. Defaults to the key's comment.",
+            "maxLength": 64,
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "public_key"
+        ]
+      }
+    },
+    {
+      "name": "delete_gpu_ssh_key",
+      "description": "Delete an SSH key from the account. It can no longer open new connections to the account's GPU instances.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "key_id": {
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "key_id"
+        ]
+      }
+    },
+    {
       "name": "add_gpu_ssh_key",
-      "description": "Authorize an SSH public key on a running GPU instance and return the SSH connection details.",
+      "description": "Add an SSH public key to the account, prepare SSH on one running GPU instance with it, and return the ssh command to connect. Use this before a first connection to skip the setup wait.",
       "inputSchema": {
         "type": "object",
         "properties": {
