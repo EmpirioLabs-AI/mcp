@@ -1748,14 +1748,14 @@
             "additionalProperties": true
           },
           "num_gpus": {
-            "description": "Number of GPUs. Your current account limit is enforced at deploy and start time.",
+            "description": "Number of GPUs in the machine, one of the GPU's `gpu_counts`; any other value is refused with `invalid_gpu_count` (422). Your current account limit is enforced at deploy and start time.",
             "minimum": 1,
             "maximum": 64,
             "default": 1,
             "type": "integer"
           },
           "disk_gb": {
-            "description": "Requested runtime disk in GB (100-300).",
+            "description": "Requested runtime disk in GB (100-300). A value outside the range is set to the nearest limit.",
             "minimum": 100,
             "maximum": 300,
             "default": 150,
@@ -1884,6 +1884,37 @@
         "required": [
           "instance_id",
           "public_key"
+        ]
+      }
+    },
+    {
+      "name": "run_gpu_command",
+      "description": "Run one shell command as root inside a running GPU instance's workload container and return its exit code, stdout and stderr. Use it to install packages, check the GPU with nvidia-smi, run a script, or read logs. Each call starts a fresh shell.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "instance_id": {
+            "pattern": "^[0-9a-f]{16}$",
+            "type": "string"
+          },
+          "command": {
+            "description": "The shell command to run, up to 16384 bytes.",
+            "minLength": 1,
+            "maxLength": 16384,
+            "type": "string"
+          },
+          "timeout_seconds": {
+            "description": "Seconds before the command is stopped.",
+            "minimum": 1,
+            "maximum": 300,
+            "default": 60,
+            "type": "integer"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "instance_id",
+          "command"
         ]
       }
     },
