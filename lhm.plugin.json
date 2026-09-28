@@ -322,6 +322,80 @@
       }
     },
     {
+      "name": "decide",
+      "description": "Answer typed questions about a state with a decision model and return calibrated probabilities instead of generated text. Put text, JSON, images, audio or video in state, then ask yes/no (noul), multiple-choice (choice), ordered-scale (score) or which-function (tool) questions. Each answer includes its probabilities and a confidence value. Uses credits.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "model": {
+            "description": "Decision model ID, for example `aplomb-1` or `aplomb-1-omni`. An unknown ID returns `404 model_not_found`.",
+            "type": "string"
+          },
+          "state": {
+            "description": "The content to decide about: text, a JSON object, or a JSON array. Put images, audio, or video anywhere inside it as media nodes, for example `{\"type\": \"image\", \"url\": \"https://example.com/photo.png\"}`.\n\nThe state is counted once per request, however many questions refer to it.\n",
+            "anyOf": [
+              {
+                "description": "Plain text.",
+                "type": "string"
+              },
+              {
+                "description": "An image, audio clip, or video inside `state`. Send a public `https://` URL in `url`, or the file as base64 in `data` with its MIME type in `mime`. Audio requires a model that accepts audio input, such as `aplomb-1-omni`.",
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "enum": [
+                      "image",
+                      "audio",
+                      "video"
+                    ],
+                    "type": "string"
+                  },
+                  "url": {
+                    "description": "Public `https://` URL of the file. Send either `url`, or `data` with `mime`.",
+                    "format": "uri",
+                    "type": "string"
+                  },
+                  "data": {
+                    "description": "The file as base64. Requires `mime`.",
+                    "type": "string"
+                  },
+                  "mime": {
+                    "description": "MIME type of `data`, for example `image/png`.",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "description": "A JSON object. Media nodes can appear at any depth.",
+                "type": "object",
+                "additionalProperties": true
+              },
+              {
+                "description": "A JSON array. Media nodes can appear at any depth.",
+                "type": "array",
+                "items": {}
+              }
+            ]
+          },
+          "questions": {
+            "description": "Questions keyed by an ID you choose, 1 to 128 per request. Each question has a `type` (`noul`, `choice`, `score`, or `tool`) and `instructions`. A `choice` question takes `criteria` as an object of option name to description or null, a `score` question takes `criteria` as an array of 2 to 10 ordered levels, and a `tool` question takes `tools`, a list of function definitions.",
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "model",
+          "state",
+          "questions"
+        ]
+      }
+    },
+    {
       "name": "generate_image",
       "description": "Generate images from a prompt (or a generation template) with an image model. Returns signed output URLs, or a job_id when generation takes longer than the wait. Uses credits.",
       "inputSchema": {

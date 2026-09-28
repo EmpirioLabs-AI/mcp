@@ -25,7 +25,7 @@ The tools are grouped into these areas. The sign-in screen lets you choose which
 | Area | What it covers |
 |---|---|
 | Models | Browse the model catalog, prices, capabilities, and parameters |
-| Text | Run chat, embeddings, reranking, and AI text detection (uses credits) |
+| Text | Run chat, embeddings, reranking, decisions, and AI text detection (uses credits) |
 | Search | Run web search, grounded answers, and research (uses credits) |
 | Media | Generate and edit images, video, audio, speech, transcription, and 3D (uses credits) |
 | Jobs | Check, wait for, and cancel generation jobs |

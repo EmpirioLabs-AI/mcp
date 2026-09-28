@@ -103,12 +103,12 @@ curl "https://mcp.empiriolabs.ai/mcp" \
 
 ## Tools
 
-81 tools in 10 toolsets. The complete reference with every parameter is on the [documentation page](https://docs.empiriolabs.ai/mcp).
+82 tools in 10 toolsets. The complete reference with every parameter is on the [documentation page](https://docs.empiriolabs.ai/mcp).
 
 | Toolset | What it covers |
 |---|---|
 | Models | Browse the model catalog, prices, capabilities, and parameters |
-| Text | Run chat, embeddings, reranking, and AI text detection (uses credits) |
+| Text | Run chat, embeddings, reranking, decisions, and AI text detection (uses credits) |
 | Search | Run web search, grounded answers, and research (uses credits) |
 | Media | Generate and edit images, video, audio, speech, transcription, and 3D (uses credits) |
 | Jobs | Check, wait for, and cancel generation jobs |
