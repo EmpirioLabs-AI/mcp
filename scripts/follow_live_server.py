@@ -36,12 +36,22 @@ OTHER_HOSTS = {
     "registry.modelcontextprotocol.io",
     "static.modelcontextprotocol.io",
 }
+# Reserved for documentation (RFC 2606): tool descriptions use them in examples
+# ("https://example.com/photo.png"), and nobody can register them, so a link to
+# one can never lead anywhere real.
+RESERVED_HOSTS = ("example.com", "example.net", "example.org")
+RESERVED_TLDS = ("example", "test", "invalid")
 LINK = re.compile(r"[A-Za-z][A-Za-z0-9+.-]*://[^\s()<>\"'`\]]+")
 
 
 def foreign_link(link: str) -> bool:
-    parts = urllib.parse.urlsplit(link.rstrip(".,;:!?"))
+    # A link inside a JSON string can end in the backslash of an escaped quote.
+    parts = urllib.parse.urlsplit(link.rstrip(".,;:!?\\"))
     host = (parts.hostname or "").rstrip(".").lower()
+    if host in RESERVED_HOSTS or host.endswith(tuple("." + h for h in RESERVED_HOSTS)):
+        return False
+    if host.rsplit(".", 1)[-1] in RESERVED_TLDS:
+        return False
     if parts.scheme != "https":
         return True
     if host == OWN_DOMAIN or host.endswith("." + OWN_DOMAIN) or host in OTHER_HOSTS:
