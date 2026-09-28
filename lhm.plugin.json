@@ -1230,8 +1230,8 @@
             }
           },
           "agent_profile": {
-            "description": "Upstream agent profile. Available profiles depend on the model (e.g. Manus exposes `manus-1.6`).",
-            "default": "manus-1.6",
+            "description": "Capability profile for the task. Manus accepts `standard` (default) for most work, `lite` for quicker, lower-cost tasks, and `max` for the most complex work. A follow-up sent with `task_id` can switch profiles.",
+            "default": "standard",
             "type": "string"
           },
           "share_visibility": {
