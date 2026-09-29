@@ -328,7 +328,7 @@
         "type": "object",
         "properties": {
           "model": {
-            "description": "Decision model ID, for example `aplomb`. An unknown ID returns `404 model_not_found`.",
+            "description": "Decision model ID, for example `aplomb-1`. An unknown ID returns `404 model_not_found`.",
             "type": "string"
           },
           "state": {
