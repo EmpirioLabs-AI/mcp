@@ -328,7 +328,7 @@
         "type": "object",
         "properties": {
           "model": {
-            "description": "Decision model ID, for example `aplomb-1` or `aplomb-1-omni`. An unknown ID returns `404 model_not_found`.",
+            "description": "Decision model ID, for example `aplomb`. An unknown ID returns `404 model_not_found`.",
             "type": "string"
           },
           "state": {
@@ -339,7 +339,7 @@
                 "type": "string"
               },
               {
-                "description": "An image, audio clip, or video inside `state`. Send a public `https://` URL in `url`, or the file as base64 in `data` with its MIME type in `mime`. Audio requires a model that accepts audio input, such as `aplomb-1-omni`.",
+                "description": "An image, audio clip, or video inside `state`. Send a public `https://` URL in `url`, or the file as base64 in `data` with its MIME type in `mime`.",
                 "type": "object",
                 "properties": {
                   "type": {
