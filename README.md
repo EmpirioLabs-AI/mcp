@@ -34,9 +34,11 @@ Run `/mcp` inside Claude Code to complete the sign-in the first time. The reposi
 
 ### ChatGPT
 
-1. Open **Settings**, then **Plugins**, and turn on **Developer mode**.
-2. Choose **Create app**, enter `https://mcp.empiriolabs.ai/mcp` as the server URL with **OAuth** authentication, and create it.
-3. Finish the sign-in and choose **Allow access**. The server also provides the `search` and `fetch` tools ChatGPT uses for connectors, so it works in chat and in deep research.
+1. Open [EmpirioLabs AI](https://chatgpt.com/plugins/plugin_asdk_app_6abd51b0891c81918954286cdd388fa3) in the ChatGPT Plugins directory and install it.
+2. Sign in to EmpirioLabs, review the request, and choose **Allow access**.
+3. Mention **@EmpirioLabs AI** in a chat to use it.
+
+You can also add the server yourself: open **Settings**, then **Plugins**, and turn on **Developer mode**. Then, on the **Plugins** page, choose **Add plugin**, then **Create app**, and enter `https://mcp.empiriolabs.ai/mcp` as the server URL with **OAuth** authentication. The server also provides the `search` and `fetch` tools ChatGPT uses for connectors, so it works in chat and in deep research.
 
 ### Cursor, VS Code, Windsurf, Cline and other editors
 
