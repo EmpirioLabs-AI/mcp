@@ -1484,7 +1484,7 @@
     },
     {
       "name": "create_batch",
-      "description": "Start a discounted batch run from an uploaded JSONL file. Each line bills at the batch price when it executes. Uses credits.",
+      "description": "Start a batch run from an uploaded JSONL file. Each line bills at the batch price when it executes. Uses credits.",
       "inputSchema": {
         "type": "object",
         "properties": {
