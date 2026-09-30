@@ -8,8 +8,8 @@ that keep their own copy of the tools (Smithery, LobeHub, the MCP registry).
 
 The stores, plugin directories and the registry act on these files without a
 human in between, so a listing is refused unless every link in it points at
-EmpirioLabs, its GitHub organisation or a fixed schema host, and server.json
-names our server at our endpoint.
+EmpirioLabs, its GitHub organisation, a fixed schema host or one of our own app
+listings, and server.json names our server at our endpoint.
 """
 from __future__ import annotations
 
@@ -36,6 +36,11 @@ OTHER_HOSTS = {
     "registry.modelcontextprotocol.io",
     "static.modelcontextprotocol.io",
 }
+# Our own apps in other clients' directories, as exact listing URLs. Never a
+# whole host: anyone can publish a chatgpt.com share link or GPT.
+OWN_APP_LISTINGS = {
+    "https://chatgpt.com/plugins/plugin_asdk_app_6abd51b0891c81918954286cdd388fa3",
+}
 # Reserved for documentation (RFC 2606): tool descriptions use them in examples
 # ("https://example.com/photo.png"), and nobody can register them, so a link to
 # one can never lead anywhere real.
@@ -54,6 +59,8 @@ def foreign_link(link: str) -> bool:
         return False
     if parts.scheme != "https":
         return True
+    if f"https://{host}{parts.path}" in OWN_APP_LISTINGS and not parts.query and not parts.fragment:
+        return False
     if host == OWN_DOMAIN or host.endswith("." + OWN_DOMAIN) or host in OTHER_HOSTS:
         return False
     return not (host == "github.com" and parts.path.startswith("/EmpirioLabs-AI/"))
