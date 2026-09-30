@@ -225,7 +225,7 @@
           },
           "parameters": {
             "type": "object",
-            "description": "Extra request fields passed through unchanged. Use get_model to see the supported parameter names, ranges, and defaults for the chosen model.",
+            "description": "Extra request fields passed through unchanged. Each model's supported parameters, ranges and defaults are listed in its model details.",
             "additionalProperties": true
           }
         },
@@ -270,7 +270,7 @@
           },
           "parameters": {
             "type": "object",
-            "description": "Extra request fields passed through unchanged. Use get_model to see the supported parameter names, ranges, and defaults for the chosen model.",
+            "description": "Extra request fields passed through unchanged. Each model's supported parameters, ranges and defaults are listed in its model details.",
             "additionalProperties": true
           }
         },
@@ -319,7 +319,7 @@
           },
           "parameters": {
             "type": "object",
-            "description": "Extra request fields passed through unchanged. Use get_model to see the supported parameter names, ranges, and defaults for the chosen model.",
+            "description": "Extra request fields passed through unchanged. Each model's supported parameters, ranges and defaults are listed in its model details.",
             "additionalProperties": true
           }
         },
@@ -448,14 +448,14 @@
           },
           "parameters": {
             "type": "object",
-            "description": "Extra request fields passed through unchanged. Use get_model to see the supported parameter names, ranges, and defaults for the chosen model.",
+            "description": "Extra request fields passed through unchanged. Each model's supported parameters, ranges and defaults are listed in its model details.",
             "additionalProperties": true
           },
           "wait_seconds": {
             "type": "integer",
             "minimum": 0,
             "maximum": 50,
-            "description": "Seconds to wait for the result before returning a job_id you can poll with get_job (default 40, max 50)."
+            "description": "Seconds to wait for the result before returning a job_id for the running job (default 40, max 50)."
           }
         },
         "additionalProperties": false
@@ -542,14 +542,14 @@
           },
           "parameters": {
             "type": "object",
-            "description": "Extra request fields passed through unchanged. Use get_model to see the supported parameter names, ranges, and defaults for the chosen model.",
+            "description": "Extra request fields passed through unchanged. Each model's supported parameters, ranges and defaults are listed in its model details.",
             "additionalProperties": true
           },
           "wait_seconds": {
             "type": "integer",
             "minimum": 0,
             "maximum": 50,
-            "description": "Seconds to wait for the result before returning a job_id you can poll with get_job (default 40, max 50)."
+            "description": "Seconds to wait for the result before returning a job_id for the running job (default 40, max 50)."
           }
         },
         "additionalProperties": false
@@ -803,14 +803,14 @@
           },
           "parameters": {
             "type": "object",
-            "description": "Extra request fields passed through unchanged. Use get_model to see the supported parameter names, ranges, and defaults for the chosen model.",
+            "description": "Extra request fields passed through unchanged. Each model's supported parameters, ranges and defaults are listed in its model details.",
             "additionalProperties": true
           },
           "wait_seconds": {
             "type": "integer",
             "minimum": 0,
             "maximum": 50,
-            "description": "Seconds to wait for the result before returning a job_id you can poll with get_job (default 40, max 50)."
+            "description": "Seconds to wait for the result before returning a job_id for the running job (default 40, max 50)."
           }
         },
         "additionalProperties": false,
@@ -905,14 +905,14 @@
           },
           "parameters": {
             "type": "object",
-            "description": "Extra request fields passed through unchanged. Use get_model to see the supported parameter names, ranges, and defaults for the chosen model.",
+            "description": "Extra request fields passed through unchanged. Each model's supported parameters, ranges and defaults are listed in its model details.",
             "additionalProperties": true
           },
           "wait_seconds": {
             "type": "integer",
             "minimum": 0,
             "maximum": 50,
-            "description": "Seconds to wait for the result before returning a job_id you can poll with get_job (default 40, max 50)."
+            "description": "Seconds to wait for the result before returning a job_id for the running job (default 40, max 50)."
           }
         },
         "additionalProperties": false,
@@ -953,7 +953,7 @@
           },
           "parameters": {
             "type": "object",
-            "description": "Extra request fields passed through unchanged. Use get_model to see the supported parameter names, ranges, and defaults for the chosen model.",
+            "description": "Extra request fields passed through unchanged. Each model's supported parameters, ranges and defaults are listed in its model details.",
             "additionalProperties": true
           }
         },
@@ -1050,14 +1050,14 @@
           },
           "parameters": {
             "type": "object",
-            "description": "Extra request fields passed through unchanged. Use get_model to see the supported parameter names, ranges, and defaults for the chosen model.",
+            "description": "Extra request fields passed through unchanged. Each model's supported parameters, ranges and defaults are listed in its model details.",
             "additionalProperties": true
           },
           "wait_seconds": {
             "type": "integer",
             "minimum": 0,
             "maximum": 50,
-            "description": "Seconds to wait for the result before returning a job_id you can poll with get_job (default 40, max 50)."
+            "description": "Seconds to wait for the result before returning a job_id for the running job (default 40, max 50)."
           }
         },
         "additionalProperties": false,
@@ -1093,14 +1093,14 @@
           },
           "parameters": {
             "type": "object",
-            "description": "Extra request fields passed through unchanged. Use get_model to see the supported parameter names, ranges, and defaults for the chosen model.",
+            "description": "Extra request fields passed through unchanged. Each model's supported parameters, ranges and defaults are listed in its model details.",
             "additionalProperties": true
           },
           "wait_seconds": {
             "type": "integer",
             "minimum": 0,
             "maximum": 50,
-            "description": "Seconds to wait for the result before returning a job_id you can poll with get_job (default 40, max 50)."
+            "description": "Seconds to wait for the result before returning a job_id for the running job (default 40, max 50)."
           }
         },
         "additionalProperties": false,
@@ -1126,7 +1126,7 @@
           },
           "parameters": {
             "type": "object",
-            "description": "Extra request fields passed through unchanged. Use get_model to see the supported parameter names, ranges, and defaults for the chosen model.",
+            "description": "Extra request fields passed through unchanged. Each model's supported parameters, ranges and defaults are listed in its model details.",
             "additionalProperties": true
           }
         },
@@ -1196,7 +1196,7 @@
           },
           "parameters": {
             "type": "object",
-            "description": "Extra request fields passed through unchanged. Use get_model to see the supported parameter names, ranges, and defaults for the chosen model.",
+            "description": "Extra request fields passed through unchanged. Each model's supported parameters, ranges and defaults are listed in its model details.",
             "additionalProperties": true
           }
         },
@@ -1222,7 +1222,7 @@
           },
           "parameters": {
             "type": "object",
-            "description": "Extra request fields passed through unchanged. Use get_model to see the supported parameter names, ranges, and defaults for the chosen model.",
+            "description": "Extra request fields passed through unchanged. Each model's supported parameters, ranges and defaults are listed in its model details.",
             "additionalProperties": true
           }
         },
@@ -1298,14 +1298,14 @@
           },
           "parameters": {
             "type": "object",
-            "description": "Extra request fields passed through unchanged. Use get_model to see the supported parameter names, ranges, and defaults for the chosen model.",
+            "description": "Extra request fields passed through unchanged. Each model's supported parameters, ranges and defaults are listed in its model details.",
             "additionalProperties": true
           },
           "wait_seconds": {
             "type": "integer",
             "minimum": 0,
             "maximum": 50,
-            "description": "Seconds to wait for the result before returning a job_id you can poll with get_job (default 40, max 50)."
+            "description": "Seconds to wait for the result before returning a job_id for the running job (default 40, max 50)."
           }
         },
         "additionalProperties": false,
@@ -1398,7 +1398,7 @@
           },
           "parameters": {
             "type": "object",
-            "description": "Extra request fields passed through unchanged. Use get_model to see the supported parameter names, ranges, and defaults for the chosen model.",
+            "description": "Extra request fields passed through unchanged. Each model's supported parameters, ranges and defaults are listed in its model details.",
             "additionalProperties": true
           }
         },
@@ -1509,7 +1509,7 @@
     },
     {
       "name": "upload_batch_file",
-      "description": "Upload a JSONL file of requests for the Batch API (one {custom_id, method, url, body} object per line). Returns the file id to pass to create_batch.",
+      "description": "Upload a JSONL file of requests for the Batch API (one {custom_id, method, url, body} object per line). Returns the id of the uploaded file.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -1663,7 +1663,7 @@
             "type": "integer",
             "minimum": 0,
             "maximum": 50,
-            "description": "Seconds to wait for the result before returning a job_id you can poll with get_job (default 40, max 50)."
+            "description": "Seconds to wait for the result before returning a job_id for the running job (default 40, max 50)."
           }
         },
         "additionalProperties": false,
@@ -2777,14 +2777,14 @@
           },
           "parameters": {
             "type": "object",
-            "description": "Extra request fields passed through unchanged. Use get_model to see the supported parameter names, ranges, and defaults for the chosen model.",
+            "description": "Extra request fields passed through unchanged. Each model's supported parameters, ranges and defaults are listed in its model details.",
             "additionalProperties": true
           },
           "wait_seconds": {
             "type": "integer",
             "minimum": 0,
             "maximum": 50,
-            "description": "Seconds to wait for the result before returning a job_id you can poll with get_job (default 40, max 50)."
+            "description": "Seconds to wait for the result before returning a job_id for the running job (default 40, max 50)."
           }
         },
         "additionalProperties": false,
@@ -2813,7 +2813,7 @@
     },
     {
       "name": "search",
-      "description": "Search the EmpirioLabs model catalog and documentation. Returns result ids for fetch: model:<slug> for a model, doc:<page> for a documentation page.",
+      "description": "Search the EmpirioLabs model catalog and documentation. Returns result ids: model:<slug> for a model, doc:<page> for a documentation page.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -2836,7 +2836,7 @@
         "properties": {
           "id": {
             "type": "string",
-            "description": "A result id returned by search."
+            "description": "A result id: model:<slug> or doc:<page>."
           }
         },
         "additionalProperties": false,
