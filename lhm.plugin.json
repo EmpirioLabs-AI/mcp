@@ -94,9 +94,11 @@
         "type": "object",
         "properties": {
           "model": {
+            "description": "Chat model id from the catalog, for example `qwen3-7-max`.",
             "type": "string"
           },
           "messages": {
+            "description": "The conversation so far, as `role` and `content` messages.",
             "type": "array",
             "items": {
               "type": "object",
@@ -129,14 +131,17 @@
             }
           },
           "temperature": {
+            "description": "Sampling temperature. Lower values give more focused output, higher values more varied output.",
             "minimum": 0,
             "maximum": 2,
             "type": "number"
           },
           "max_tokens": {
+            "description": "Maximum number of tokens to generate.",
             "type": "integer"
           },
           "tools": {
+            "description": "Function definitions the model may call, in the OpenAI tools format.",
             "type": "array",
             "items": {
               "type": "object",
@@ -144,6 +149,7 @@
             }
           },
           "tool_choice": {
+            "description": "How the model uses `tools`: `auto`, `none`, `required`, or an object naming one function.",
             "anyOf": [
               {
                 "enum": [
@@ -211,7 +217,7 @@
           },
           "prompt": {
             "type": "string",
-            "description": "A single user message. Use messages instead for multi-turn input."
+            "description": "A single user message to send to the model."
           },
           "system": {
             "type": "string",
@@ -236,9 +242,11 @@
         "type": "object",
         "properties": {
           "model": {
+            "description": "Embedding model id, for example `text-embedding-v4`.",
             "type": "string"
           },
           "input": {
+            "description": "Text to embed, or an array of texts.",
             "anyOf": [
               {
                 "type": "string"
@@ -252,6 +260,7 @@
             ]
           },
           "encoding_format": {
+            "description": "Vector encoding: `float` arrays or `base64` strings.",
             "enum": [
               "float",
               "base64"
@@ -279,6 +288,7 @@
         "type": "object",
         "properties": {
           "model": {
+            "description": "Reranking model id, for example `qwen3-rerank`.",
             "type": "string"
           },
           "query": {
@@ -397,14 +407,16 @@
     },
     {
       "name": "generate_image",
-      "description": "Generate images from a prompt (or a generation template) with an image model. Returns signed output URLs, or a job_id when generation takes longer than the wait. Uses credits.",
+      "description": "Generate images from a prompt with an image model. Returns signed output URLs, or a job_id when generation takes longer than the wait. Uses credits.",
       "inputSchema": {
         "type": "object",
         "properties": {
           "model": {
+            "description": "Image model id, for example `qwen-image-2-0`. Omit it to use the default image model.",
             "type": "string"
           },
           "prompt": {
+            "description": "Description of the image to create.",
             "type": "string"
           },
           "template": {
@@ -412,12 +424,15 @@
             "type": "string"
           },
           "aspect_ratio": {
+            "description": "Output aspect ratio, for example `1:1` or `16:9`.",
             "type": "string"
           },
           "resolution": {
+            "description": "Output resolution. The supported values depend on the model.",
             "type": "string"
           },
           "num_images": {
+            "description": "Number of images to create.",
             "minimum": 1,
             "maximum": 4,
             "default": 1,
@@ -448,14 +463,16 @@
     },
     {
       "name": "generate_video",
-      "description": "Generate a video from a prompt, an image, or a creative-effect template with a video model. Video takes minutes, so the tool returns a job_id for the running job. Uses credits.",
+      "description": "Generate a video from a prompt or an image with a video model. Video takes minutes, so the tool returns a job_id for the running job. Uses credits.",
       "inputSchema": {
         "type": "object",
         "properties": {
           "model": {
+            "description": "Video model id from the catalog, for example `kling-3-0-turbo`.",
             "type": "string"
           },
           "prompt": {
+            "description": "Description of the video to create.",
             "type": "string"
           },
           "template": {
@@ -477,15 +494,19 @@
             "additionalProperties": false
           },
           "resolution": {
+            "description": "Output resolution. The supported values depend on the model.",
             "type": "string"
           },
           "aspect_ratio": {
+            "description": "Output aspect ratio, for example `16:9` or `9:16`.",
             "type": "string"
           },
           "duration": {
+            "description": "Video length in seconds. The supported values depend on the model.",
             "type": "integer"
           },
           "generate_audio": {
+            "description": "Also create an audio track, on models that support it.",
             "default": true,
             "type": "boolean"
           },
@@ -579,7 +600,8 @@
         "type": "object",
         "properties": {
           "slug": {
-            "type": "string"
+            "type": "string",
+            "description": "Template slug from the template list."
           }
         },
         "additionalProperties": false,
@@ -608,6 +630,7 @@
             "type": "string"
           },
           "mode": {
+            "description": "`plan` writes a storyboard, `render` produces the video from a storyboard, `edit` changes a rendered video.",
             "enum": [
               "plan",
               "render",
@@ -694,14 +717,17 @@
             }
           },
           "aspect_ratio": {
+            "description": "Output aspect ratio, for example `9:16` or `16:9`.",
             "type": "string"
           },
           "scene_count": {
+            "description": "Number of scenes.",
             "minimum": 1,
             "maximum": 12,
             "type": "integer"
           },
           "caption_style": {
+            "description": "Caption style preset for the recipe.",
             "type": "string"
           },
           "music": {
@@ -801,6 +827,7 @@
         "type": "object",
         "properties": {
           "model": {
+            "description": "3D model id, for example `trellis-2-4b`.",
             "type": "string"
           },
           "image": {
@@ -822,6 +849,7 @@
             "type": "string"
           },
           "resolution": {
+            "description": "Generation resolution. Higher values add detail and take longer.",
             "enum": [
               "512",
               "1024",
@@ -831,12 +859,14 @@
             "type": "string"
           },
           "seed": {
+            "description": "Random seed for reproducible results.",
             "minimum": 0,
             "maximum": 2147483647,
             "default": 42,
             "type": "integer"
           },
           "texture_size": {
+            "description": "Texture size in pixels.",
             "enum": [
               "1024",
               "2048",
@@ -846,22 +876,26 @@
             "type": "string"
           },
           "decimation_target": {
+            "description": "Target face count of the simplified mesh.",
             "minimum": 10000,
             "maximum": 1000000,
             "default": 500000,
             "type": "integer"
           },
           "remesh": {
+            "description": "Rebuild the mesh topology before export.",
             "default": true,
             "type": "boolean"
           },
           "max_num_tokens": {
+            "description": "Maximum generation tokens.",
             "minimum": 1024,
             "maximum": 131072,
             "default": 49152,
             "type": "integer"
           },
           "response_format": {
+            "description": "Return the asset as a `url` or as inline `b64_json`.",
             "enum": [
               "url",
               "b64_json"
@@ -894,6 +928,7 @@
         "type": "object",
         "properties": {
           "model": {
+            "description": "Text-to-speech model id, for example `qwen-audio-3-0-tts`.",
             "type": "string"
           },
           "input": {
@@ -905,9 +940,11 @@
             "type": "string"
           },
           "voice": {
+            "description": "Voice id available for the chosen model.",
             "type": "string"
           },
           "output_format": {
+            "description": "Audio file format, for example `mp3` or `wav`.",
             "type": "string"
           },
           "duration": {
@@ -974,6 +1011,7 @@
         "type": "object",
         "properties": {
           "model": {
+            "description": "Music or sound model id, for example `ace-step-1-5-xl`.",
             "type": "string"
           },
           "prompt": {
@@ -1001,6 +1039,7 @@
             "type": "integer"
           },
           "output_format": {
+            "description": "Audio file format.",
             "enum": [
               "mp3",
               "wav",
@@ -1034,17 +1073,21 @@
         "type": "object",
         "properties": {
           "model": {
+            "description": "Speech-to-text model id, for example `deepgram-nova-3`.",
             "type": "string"
           },
           "file_url": {
+            "description": "HTTPS URL of the audio or video file to transcribe.",
             "format": "uri",
             "type": "string"
           },
           "diarize": {
+            "description": "Label each part of the transcript with its speaker.",
             "default": false,
             "type": "boolean"
           },
           "smart_format": {
+            "description": "Format punctuation, numbers and dates in the transcript.",
             "default": true,
             "type": "boolean"
           },
@@ -1074,9 +1117,11 @@
         "type": "object",
         "properties": {
           "model": {
+            "description": "Search model id, for example `tavily-search` or `exa-search`.",
             "type": "string"
           },
           "query": {
+            "description": "What to search for.",
             "type": "string"
           },
           "parameters": {
@@ -1099,6 +1144,7 @@
         "type": "object",
         "properties": {
           "model": {
+            "description": "Research model id, for example `tavily-research`.",
             "type": "string"
           },
           "query": {
@@ -1114,6 +1160,7 @@
             }
           },
           "reasoning_effort": {
+            "description": "How much research to do: `low`, `medium` or `high`.",
             "enum": [
               "low",
               "medium",
@@ -1123,6 +1170,7 @@
             "type": "string"
           },
           "max_output_tokens": {
+            "description": "Maximum length of the report in tokens.",
             "default": 10000,
             "type": "integer"
           },
@@ -1131,6 +1179,7 @@
             "type": "string"
           },
           "search_recency_filter": {
+            "description": "Only use sources from the last hour, day, week, month or year.",
             "enum": [
               "hour",
               "day",
@@ -1164,9 +1213,11 @@
         "type": "object",
         "properties": {
           "model": {
+            "description": "Grounded answer model id, for example `exa-answer`.",
             "type": "string"
           },
           "query": {
+            "description": "The question to answer.",
             "type": "string"
           },
           "parameters": {
@@ -1189,6 +1240,7 @@
         "type": "object",
         "properties": {
           "model": {
+            "description": "Agent model id, for example `manus`.",
             "type": "string"
           },
           "input": {
@@ -1270,7 +1322,8 @@
         "type": "object",
         "properties": {
           "task_id": {
-            "type": "string"
+            "type": "string",
+            "description": "Agent task id returned when the task started."
           }
         },
         "additionalProperties": false,
@@ -1286,7 +1339,8 @@
         "type": "object",
         "properties": {
           "task_id": {
-            "type": "string"
+            "type": "string",
+            "description": "Agent task id returned when the task started."
           }
         },
         "additionalProperties": false,
@@ -1302,7 +1356,8 @@
         "type": "object",
         "properties": {
           "task_id": {
-            "type": "string"
+            "type": "string",
+            "description": "Agent task id returned when the task started."
           }
         },
         "additionalProperties": false,
@@ -1318,6 +1373,7 @@
         "type": "object",
         "properties": {
           "model": {
+            "description": "Vision model id, for example `janus-pro-deepseek`.",
             "type": "string"
           },
           "image_url": {
@@ -1329,12 +1385,15 @@
             "type": "string"
           },
           "analysis_temperature": {
+            "description": "Sampling temperature for the answer.",
             "type": "number"
           },
           "analysis_top_p": {
+            "description": "Nucleus sampling value for the answer.",
             "type": "number"
           },
           "analysis_seed": {
+            "description": "Random seed for a reproducible answer.",
             "type": "integer"
           },
           "parameters": {
@@ -1358,6 +1417,7 @@
         "type": "object",
         "properties": {
           "model": {
+            "description": "Detection model id, for example `gptzero`.",
             "type": "string"
           },
           "input": {
@@ -1365,6 +1425,7 @@
             "type": "string"
           },
           "scan_type": {
+            "description": "What to check: `ai_detection` (the default), `bibliography` or `fact_check`.",
             "enum": [
               "ai_detection",
               "bibliography",
@@ -1379,6 +1440,7 @@
             "type": "boolean"
           },
           "version": {
+            "description": "Detector version. The latest version is used by default.",
             "default": "__latest__",
             "type": "string"
           }
@@ -1473,7 +1535,8 @@
         "type": "object",
         "properties": {
           "file_id": {
-            "type": "string"
+            "type": "string",
+            "description": "Id of a batch input, output or error file."
           }
         },
         "additionalProperties": false,
@@ -1489,9 +1552,11 @@
         "type": "object",
         "properties": {
           "input_file_id": {
+            "description": "Id of the uploaded JSONL input file.",
             "type": "string"
           },
           "endpoint": {
+            "description": "API path every line of the file calls, for example `/v1/chat/completions`.",
             "enum": [
               "/v1/chat/completions",
               "/v1/embeddings"
@@ -1500,10 +1565,12 @@
             "type": "string"
           },
           "completion_window": {
+            "description": "Time window for the batch to finish.",
             "default": "24h",
             "type": "string"
           },
           "metadata": {
+            "description": "Your own key-value labels for the batch.",
             "type": "object",
             "additionalProperties": true
           }
@@ -1530,7 +1597,8 @@
         "type": "object",
         "properties": {
           "batch_id": {
-            "type": "string"
+            "type": "string",
+            "description": "Batch id returned when the batch was created."
           }
         },
         "additionalProperties": false,
@@ -1546,7 +1614,8 @@
         "type": "object",
         "properties": {
           "batch_id": {
-            "type": "string"
+            "type": "string",
+            "description": "Batch id returned when the batch was created."
           }
         },
         "additionalProperties": false,
@@ -1567,12 +1636,14 @@
               "completed",
               "failed"
             ],
-            "type": "string"
+            "type": "string",
+            "description": "Only jobs in this status."
           },
           "limit": {
             "maximum": 100,
             "default": 25,
-            "type": "integer"
+            "type": "integer",
+            "description": "Maximum number of jobs to return."
           }
         },
         "additionalProperties": false
@@ -1585,7 +1656,8 @@
         "type": "object",
         "properties": {
           "job_id": {
-            "type": "string"
+            "type": "string",
+            "description": "Job id returned by a generation request."
           },
           "wait_seconds": {
             "type": "integer",
@@ -1607,7 +1679,8 @@
         "type": "object",
         "properties": {
           "job_id": {
-            "type": "string"
+            "type": "string",
+            "description": "Job id returned by a generation request."
           }
         },
         "additionalProperties": false,
@@ -1632,7 +1705,8 @@
         "type": "object",
         "properties": {
           "slug": {
-            "type": "string"
+            "type": "string",
+            "description": "GPU type slug, for example `h100`."
           }
         },
         "additionalProperties": false,
@@ -1708,6 +1782,7 @@
             "type": "string"
           },
           "size_gb": {
+            "description": "Volume size in GB, from 1 to 4,000.",
             "minimum": 1,
             "maximum": 4000,
             "type": "integer"
@@ -1738,7 +1813,8 @@
         "properties": {
           "volume_id": {
             "format": "uuid",
-            "type": "string"
+            "type": "string",
+            "description": "Volume id."
           }
         },
         "additionalProperties": false,
@@ -1755,7 +1831,8 @@
         "properties": {
           "volume_id": {
             "format": "uuid",
-            "type": "string"
+            "type": "string",
+            "description": "Volume id."
           }
         },
         "additionalProperties": false,
@@ -1863,7 +1940,8 @@
         "type": "object",
         "properties": {
           "instance_id": {
-            "type": "string"
+            "type": "string",
+            "description": "GPU instance id."
           }
         },
         "additionalProperties": false,
@@ -1879,7 +1957,8 @@
         "type": "object",
         "properties": {
           "instance_id": {
-            "type": "string"
+            "type": "string",
+            "description": "GPU instance id."
           }
         },
         "additionalProperties": false,
@@ -1929,7 +2008,8 @@
         "properties": {
           "key_id": {
             "format": "uuid",
-            "type": "string"
+            "type": "string",
+            "description": "SSH key id."
           }
         },
         "additionalProperties": false,
@@ -1946,7 +2026,8 @@
         "properties": {
           "instance_id": {
             "pattern": "^[0-9a-f]{16}$",
-            "type": "string"
+            "type": "string",
+            "description": "GPU instance id."
           },
           "public_key": {
             "description": "A single-line ssh-ed25519 or ssh-rsa public key, without options or line breaks. RSA keys must be 2048 to 8192 bits.",
@@ -1969,7 +2050,8 @@
         "properties": {
           "instance_id": {
             "pattern": "^[0-9a-f]{16}$",
-            "type": "string"
+            "type": "string",
+            "description": "GPU instance id."
           },
           "command": {
             "description": "The shell command to run, up to 16384 bytes.",
@@ -1999,7 +2081,8 @@
         "type": "object",
         "properties": {
           "instance_id": {
-            "type": "string"
+            "type": "string",
+            "description": "GPU instance id."
           },
           "action": {
             "enum": [
@@ -2007,7 +2090,8 @@
               "start",
               "refresh"
             ],
-            "type": "string"
+            "type": "string",
+            "description": "`stop`, `start` or `refresh` the instance."
           }
         },
         "additionalProperties": false,
@@ -2113,6 +2197,7 @@
         "type": "object",
         "properties": {
           "agent_type": {
+            "description": "Agent runtime: `openclaw` or `hermes`.",
             "enum": [
               "openclaw",
               "hermes"
@@ -2120,12 +2205,15 @@
             "type": "string"
           },
           "name": {
+            "description": "Display name for the agent.",
             "type": "string"
           },
           "plan_slug": {
+            "description": "Hosted agent plan slug.",
             "type": "string"
           },
           "default_provider": {
+            "description": "Model provider for the agent. `empirio` uses EmpirioLabs models.",
             "enum": [
               "empirio",
               "poe",
@@ -2136,6 +2224,7 @@
             "type": "string"
           },
           "default_model": {
+            "description": "Default model id for the agent.",
             "type": "string"
           },
           "config": {
@@ -2169,7 +2258,8 @@
         "type": "object",
         "properties": {
           "instance_id": {
-            "type": "string"
+            "type": "string",
+            "description": "Hosted agent id."
           }
         },
         "additionalProperties": false,
@@ -2185,7 +2275,8 @@
         "type": "object",
         "properties": {
           "instance_id": {
-            "type": "string"
+            "type": "string",
+            "description": "Hosted agent id."
           }
         },
         "additionalProperties": false,
@@ -2201,9 +2292,11 @@
         "type": "object",
         "properties": {
           "instance_id": {
-            "type": "string"
+            "type": "string",
+            "description": "Hosted agent id."
           },
           "name": {
+            "description": "New display name.",
             "type": "string"
           }
         },
@@ -2221,7 +2314,8 @@
         "type": "object",
         "properties": {
           "instance_id": {
-            "type": "string"
+            "type": "string",
+            "description": "Hosted agent id."
           },
           "action": {
             "enum": [
@@ -2230,7 +2324,8 @@
               "restart",
               "refresh"
             ],
-            "type": "string"
+            "type": "string",
+            "description": "`start`, `stop`, `restart` or `refresh` the agent."
           }
         },
         "additionalProperties": false,
@@ -2247,9 +2342,11 @@
         "type": "object",
         "properties": {
           "instance_id": {
-            "type": "string"
+            "type": "string",
+            "description": "Hosted agent id."
           },
           "messages": {
+            "description": "Messages to send, as `role` and `content` objects.",
             "type": "array",
             "items": {
               "type": "object",
@@ -2271,7 +2368,8 @@
         "type": "object",
         "properties": {
           "instance_id": {
-            "type": "string"
+            "type": "string",
+            "description": "Hosted agent id."
           }
         },
         "additionalProperties": false,
@@ -2287,9 +2385,11 @@
         "type": "object",
         "properties": {
           "instance_id": {
-            "type": "string"
+            "type": "string",
+            "description": "Hosted agent id."
           },
           "kind": {
+            "description": "Integration to save.",
             "enum": [
               "poe_api_key",
               "openrouter_api_key",
@@ -2307,6 +2407,7 @@
             "type": "string"
           },
           "config": {
+            "description": "Settings for the integration.",
             "type": "object",
             "additionalProperties": true
           }
@@ -2325,7 +2426,8 @@
         "type": "object",
         "properties": {
           "instance_id": {
-            "type": "string"
+            "type": "string",
+            "description": "Hosted agent id."
           },
           "kind": {
             "enum": [
@@ -2339,7 +2441,8 @@
               "msteams",
               "whatsapp"
             ],
-            "type": "string"
+            "type": "string",
+            "description": "Integration to disconnect."
           }
         },
         "additionalProperties": false,
@@ -2356,7 +2459,8 @@
         "type": "object",
         "properties": {
           "instance_id": {
-            "type": "string"
+            "type": "string",
+            "description": "Hosted agent id."
           },
           "kind": {
             "enum": [
@@ -2368,7 +2472,8 @@
               "msteams",
               "whatsapp"
             ],
-            "type": "string"
+            "type": "string",
+            "description": "Messaging channel to configure."
           },
           "behavior": {
             "description": "Per-channel chat signal settings. `streaming` controls live reply preview on supported messaging channels, not model API streaming.",
@@ -2423,9 +2528,11 @@
         "type": "object",
         "properties": {
           "instance_id": {
-            "type": "string"
+            "type": "string",
+            "description": "Hosted agent id."
           },
           "provider": {
+            "description": "Model provider. `empirio` uses EmpirioLabs models.",
             "enum": [
               "empirio",
               "poe",
@@ -2435,6 +2542,7 @@
             "type": "string"
           },
           "model": {
+            "description": "Model id to use.",
             "type": "string"
           },
           "custom_provider": {
@@ -2458,7 +2566,8 @@
         "type": "object",
         "properties": {
           "instance_id": {
-            "type": "string"
+            "type": "string",
+            "description": "Hosted agent id."
           },
           "kind": {
             "description": "Optional connected channel kind to update when sent in the JSON body.",
@@ -2474,6 +2583,7 @@
             "type": "string"
           },
           "mode": {
+            "description": "`open` or `restricted` (only the users in `allow`).",
             "enum": [
               "open",
               "restricted"
@@ -2500,7 +2610,8 @@
         "type": "object",
         "properties": {
           "instance_id": {
-            "type": "string"
+            "type": "string",
+            "description": "Hosted agent id."
           }
         },
         "additionalProperties": false,
@@ -2516,7 +2627,8 @@
         "type": "object",
         "properties": {
           "instance_id": {
-            "type": "string"
+            "type": "string",
+            "description": "Hosted agent id."
           },
           "slug": {
             "description": "A skill ref (clawhub:, hermes:, ocgit:, or url:).",
@@ -2541,7 +2653,8 @@
         "type": "object",
         "properties": {
           "instance_id": {
-            "type": "string"
+            "type": "string",
+            "description": "Hosted agent id."
           },
           "slug": {
             "type": "string",
@@ -2562,7 +2675,8 @@
         "type": "object",
         "properties": {
           "instance_id": {
-            "type": "string"
+            "type": "string",
+            "description": "Hosted agent id."
           }
         },
         "additionalProperties": false,
@@ -2578,9 +2692,11 @@
         "type": "object",
         "properties": {
           "instance_id": {
-            "type": "string"
+            "type": "string",
+            "description": "Hosted agent id."
           },
           "name": {
+            "description": "Connector name, unique for the agent.",
             "type": "string"
           },
           "url": {
@@ -2588,6 +2704,7 @@
             "type": "string"
           },
           "transport": {
+            "description": "`streamable-http` or `sse`.",
             "enum": [
               "streamable-http",
               "sse"
@@ -2595,12 +2712,15 @@
             "type": "string"
           },
           "header_name": {
+            "description": "Optional HTTP header sent to the MCP server, for example `Authorization`.",
             "type": "string"
           },
           "header_value": {
+            "description": "Value of that header.",
             "type": "string"
           },
           "tool_include": {
+            "description": "Only offer these tool names from the server.",
             "type": "array",
             "items": {
               "type": "string"
@@ -2622,7 +2742,8 @@
         "type": "object",
         "properties": {
           "instance_id": {
-            "type": "string"
+            "type": "string",
+            "description": "Hosted agent id."
           },
           "name": {
             "type": "string",
@@ -2680,7 +2801,8 @@
         "type": "object",
         "properties": {
           "instance_id": {
-            "type": "string"
+            "type": "string",
+            "description": "Hosted agent id."
           }
         },
         "additionalProperties": false,

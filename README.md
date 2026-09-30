@@ -128,7 +128,6 @@ Profiles expose a subset of toolsets at a shorter URL:
 | `https://mcp.empiriolabs.ai/mcp/inference` | models, text, search, jobs, account |
 | `https://mcp.empiriolabs.ai/mcp/media` | models, media, jobs, account |
 | `https://mcp.empiriolabs.ai/mcp/cloud` | models, account, gpu, hosted_agents |
-| `https://mcp.empiriolabs.ai/mcp/no-media` | models, text, search, jobs, agents, account, batch, gpu, hosted_agents |
 
 Combine toolsets with `+`, for example `https://mcp.empiriolabs.ai/mcp/models+text+jobs`.
 
