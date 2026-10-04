@@ -1846,7 +1846,15 @@
       "description": "List the account's GPU instances with status, GPU type, hourly price and connection details.",
       "inputSchema": {
         "type": "object",
-        "properties": {},
+        "properties": {
+          "order_key": {
+            "description": "A unique deployment key. Start with a letter or number; use letters, numbers, dots, colons, underscores or hyphens. Reuse it only for the same deployment and unchanged settings.",
+            "minLength": 8,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{7,127}$",
+            "type": "string"
+          }
+        },
         "additionalProperties": false
       }
     },
@@ -1856,6 +1864,13 @@
       "inputSchema": {
         "type": "object",
         "properties": {
+          "order_key": {
+            "description": "A unique deployment key. Start with a letter or number; use letters, numbers, dots, colons, underscores or hyphens. Reuse it only for the same deployment and unchanged settings.",
+            "minLength": 8,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{7,127}$",
+            "type": "string"
+          },
           "volume_id": {
             "description": "An available volume you own. Its directory is restored into /workspace before startup and saved before stop or destruction.",
             "format": "uuid",
