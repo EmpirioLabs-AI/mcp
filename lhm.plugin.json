@@ -395,6 +395,15 @@
             "description": "Questions keyed by an ID you choose, 1 to 128 per request. Each question has a `type` (`noul`, `choice`, `score`, or `tool`) and `instructions`. A `choice` question takes `criteria` as an object of option name to description or null, a `score` question takes `criteria` as an array of 2 to 10 ordered levels, and a `tool` question takes `tools`, a list of function definitions.",
             "type": "object",
             "additionalProperties": true
+          },
+          "long_context": {
+            "description": "How a state longer than 131,072 tokens is read. `fast` answers faster. `full` reads every token of the state; use it when an answer can depend on details anywhere in a long state. Images, audio, and video are read in full in both modes.",
+            "enum": [
+              "fast",
+              "full"
+            ],
+            "default": "fast",
+            "type": "string"
           }
         },
         "additionalProperties": false,
