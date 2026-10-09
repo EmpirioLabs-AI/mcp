@@ -666,6 +666,10 @@
               "aspect_ratio": {
                 "type": "string"
               },
+              "resolution": {
+                "description": "Resolution the scene videos are generated at; a request's `resolution` takes precedence.",
+                "type": "string"
+              },
               "caption_style": {
                 "type": "string"
               },
@@ -734,6 +738,41 @@
             "minimum": 1,
             "maximum": 12,
             "type": "integer"
+          },
+          "input_mode": {
+            "description": "Plan mode: `topic` writes a script from the brief; `script` reads your text as the narration.",
+            "enum": [
+              "topic",
+              "script"
+            ],
+            "default": "topic",
+            "type": "string"
+          },
+          "resolution": {
+            "description": "Render mode (or the storyboard's `resolution`): the resolution the scene videos are generated at, for example `720p` or `1080p`. The options are the `resolution` parameter of the recipe's video model on `GET /v1/models/{model}`; a value that model does not offer uses `720p` where it is offered. Higher resolutions cost more per scene.",
+            "default": "720p",
+            "type": "string"
+          },
+          "visual_mode": {
+            "description": "Plan mode (the storyboard carries it to render): `video` makes every scene a video clip, `image` uses still images, and `auto` lets the plan choose per scene. Defaults to the recipe's `visual_mode`.",
+            "enum": [
+              "auto",
+              "image",
+              "video"
+            ],
+            "type": "string"
+          },
+          "audio_mode": {
+            "description": "Plan mode (the storyboard carries it to render): `voiceover` narrates the script; `music` makes a montage with no narration, set to music. Defaults to the recipe's `audio_mode`.",
+            "enum": [
+              "voiceover",
+              "music"
+            ],
+            "type": "string"
+          },
+          "aesthetic": {
+            "description": "Optional Generation Template look applied to every scene, for example `dark-fantasy`, `dreamcore` or `frutiger-aero`. That template's recommended model generates the scenes, and a template with its own music track plays it under a `music` montage.",
+            "type": "string"
           },
           "caption_style": {
             "description": "Caption style preset for the recipe.",
