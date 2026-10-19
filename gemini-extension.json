@@ -1,0 +1,10 @@
+{
+  "name": "empiriolabs",
+  "version": "1.2.0",
+  "description": "Run 180+ AI models, image, video and speech generation, web search, batch jobs, GPU Cloud and hosted agents as tools with your EmpirioLabs account.",
+  "mcpServers": {
+    "empiriolabs": {
+      "httpUrl": "https://mcp.empiriolabs.ai/mcp"
+    }
+  }
+}
