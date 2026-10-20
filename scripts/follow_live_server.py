@@ -4,7 +4,7 @@
 The server (https://mcp.empiriolabs.ai) follows the EmpirioLabs documentation by
 itself and renders these files at /listing.json from its live tool surface. This
 script writes them here; the workflow commits any change and refreshes the stores
-that keep their own copy of the tools (Smithery, LobeHub, the MCP registry).
+that keep their own copy of the tools (LobeHub, the MCP registry).
 
 The stores, plugin directories and the registry act on these files without a
 human in between, so a listing is refused unless every link in it points at

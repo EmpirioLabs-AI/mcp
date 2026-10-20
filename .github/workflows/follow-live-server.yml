@@ -3,6 +3,8 @@ name: Follow the live MCP server
 # The EmpirioLabs MCP server follows the EmpirioLabs docs by itself and renders
 # this repository's listing at https://mcp.empiriolabs.ai/listing.json. This job
 # mirrors it, then refreshes the stores that keep their own copy of the tools.
+# Smithery is not one of them any more: it stops its API, CLI and accounts on
+# 2026-10-31 and stays a directory only, so its refresh step was removed.
 #
 # Each secret reaches only the step that uses it, the checkout leaves no token
 # on disk, and the store CLIs are pinned and run outside the repository, so one
@@ -16,7 +18,7 @@ on:
   workflow_dispatch:
     inputs:
       refresh_stores:
-        description: Refresh Smithery and LobeHub and sign in to the registry even without a change
+        description: Refresh LobeHub and sign in to the registry even without a change
         type: boolean
         default: true
 
@@ -33,10 +35,8 @@ jobs:
     timeout-minutes: 15
     env:
       # Whether each secret is configured; the values are set on their own steps.
-      HAS_SMITHERY: ${{ secrets.SMITHERY_API_KEY != '' }}
       HAS_LOBEHUB: ${{ secrets.LOBEHUB_CREDENTIALS_KEY != '' }}
       HAS_REGISTRY_KEY: ${{ secrets.MCP_REGISTRY_PRIVATE_KEY != '' }}
-      SMITHERY_CLI: "@smithery/cli@4.11.1"
       LOBEHUB_CLI: "@lobehub/market-cli@0.0.41"
       MCP_PUBLISHER_URL: https://github.com/modelcontextprotocol/registry/releases/download/v1.8.1/mcp-publisher_linux_amd64.tar.gz
       MCP_PUBLISHER_SHA256: a06c9096dcb9727c13555b6be26c7effa707b01f06a4c561ba7a3635443cf2cc
@@ -89,13 +89,6 @@ jobs:
           if [ "$PUBLISH" = "true" ]; then
             HOME="$work/home" "$work/mcp-publisher" publish
           fi
-
-      - name: Refresh Smithery
-        if: (steps.mirror.outputs.changed == 'true' || inputs.refresh_stores) && env.HAS_SMITHERY == 'true'
-        working-directory: ${{ runner.temp }}
-        env:
-          SMITHERY_API_KEY: ${{ secrets.SMITHERY_API_KEY }}
-        run: npx --yes "$SMITHERY_CLI" mcp publish https://mcp.empiriolabs.ai/mcp -n empiriolabs-ai/mcp --config-schema '{"type":"object","properties":{},"additionalProperties":false}'
 
       - name: Restore the LobeHub session
         if: env.HAS_LOBEHUB == 'true'
