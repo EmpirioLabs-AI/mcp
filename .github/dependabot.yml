@@ -1,0 +1,17 @@
+version: 2
+updates:
+  # Version updates wait until a release is a week old: a poisoned release is
+  # usually found and pulled within hours. Security updates are not delayed.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+  # The locked LobeHub CLI that follow-live-server.yml refreshes the listing with.
+  - package-ecosystem: npm
+    directory: /.github/lobehub
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7

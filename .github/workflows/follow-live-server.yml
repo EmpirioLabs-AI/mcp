@@ -1,17 +1,25 @@
 name: Follow the live MCP server
 
 # The EmpirioLabs MCP server follows the EmpirioLabs docs by itself and renders
-# this repository's listing at https://mcp.empiriolabs.ai/listing.json. This job
-# mirrors it, then refreshes the stores that keep their own copy of the tools.
-# Smithery is not one of them any more: it stops its API, CLI and accounts on
-# 2026-10-31 and stays a directory only, so its refresh step was removed.
+# this repository's listing at https://mcp.empiriolabs.ai/listing.json. The
+# follow job mirrors it; then the registry and lobehub jobs refresh the stores
+# that keep their own copy of the tools, each on its own runner with only its own
+# credential. Smithery is not one of them any more: it stops its API, CLI and
+# accounts on 2026-10-31 and stays a directory only, so its refresh was removed.
 #
-# Each secret reaches only the step that uses it, the checkout leaves no token
-# on disk, and the store CLIs are pinned and run outside the repository, so one
+# Each secret reaches only the step that uses it, no checkout leaves a token on
+# disk, and the store CLIs are pinned and run outside the repository, so one
 # compromised tool or a tampered listing cannot reach another credential. The
-# LobeHub CLI comes from .github/lobehub/package-lock.json (exact versions and
-# integrity hashes, no install scripts), installed in a step with no secret; the
-# mirror never writes under .github.
+# mirror never writes under .github or scripts.
+#
+# The MCP registry's domain key is a secret of the mcp-registry environment,
+# which deploys only from main. It has no reviewer on purpose: the registry
+# follows the live server without a manual step, like the docs site. The
+# registry job runs only when there is a version to publish or a sign-in was
+# asked for, and installs nothing: mcp-publisher is a release binary checked
+# against a pinned SHA-256. The LobeHub CLI comes from
+# .github/lobehub/package-lock.json (exact versions and integrity hashes, no
+# install scripts), installed in a step with no secret.
 #
 # No schedule here: GitHub stops scheduled workflows in a public repository after
 # 60 days without a commit. heartbeat.yml and the documentation repository's
@@ -24,9 +32,13 @@ on:
         description: Refresh LobeHub and sign in to the registry even without a change
         type: boolean
         default: true
+      check_registry_key:
+        description: Sign in to the MCP registry to check the domain key, without refreshing LobeHub
+        type: boolean
+        default: false
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: follow-live-server
@@ -35,13 +47,13 @@ concurrency:
 jobs:
   follow:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
-    env:
-      # Whether each secret is configured; the values are set on their own steps.
-      HAS_LOBEHUB: ${{ secrets.LOBEHUB_CREDENTIALS_KEY != '' }}
-      HAS_REGISTRY_KEY: ${{ secrets.MCP_REGISTRY_PRIVATE_KEY != '' }}
-      MCP_PUBLISHER_URL: https://github.com/modelcontextprotocol/registry/releases/download/v1.8.1/mcp-publisher_linux_amd64.tar.gz
-      MCP_PUBLISHER_SHA256: a06c9096dcb9727c13555b6be26c7effa707b01f06a4c561ba7a3635443cf2cc
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    outputs:
+      changed: ${{ steps.mirror.outputs.changed }}
+      sha: ${{ steps.head.outputs.sha }}
+      publish: ${{ steps.registry.outputs.publish }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -65,22 +77,49 @@ jobs:
           echo "::add-mask::$auth"
           git -c http.https://github.com/.extraheader="AUTHORIZATION: basic $auth" push
 
-      # The registry refuses a version it already holds, so this publishes only a
-      # new version in server.json, and only one that names our endpoint. A run
-      # with refresh_stores also signs in, which proves the domain key still matches
-      # https://empiriolabs.ai/.well-known/mcp-registry-auth.
+      - name: Record the commit that holds the listing
+        id: head
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      # The registry refuses a version it already holds, so only a new version in
+      # server.json is published, and only one that names our endpoint. This
+      # check needs no credential.
       - name: Check the official MCP registry
         id: registry
         run: python3 scripts/registry_version.py
 
-      - name: Publish to the official MCP registry
-        if: (steps.registry.outputs.publish == 'true' || inputs.refresh_stores) && env.HAS_REGISTRY_KEY == 'true'
+  # A run with refresh_stores or check_registry_key also signs in, which proves
+  # the domain key still matches https://empiriolabs.ai/.well-known/mcp-registry-auth.
+  registry:
+    needs: follow
+    if: needs.follow.outputs.publish == 'true' || inputs.refresh_stores || inputs.check_registry_key
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: mcp-registry
+    env:
+      MCP_PUBLISHER_URL: https://github.com/modelcontextprotocol/registry/releases/download/v1.8.1/mcp-publisher_linux_amd64.tar.gz
+      MCP_PUBLISHER_SHA256: a06c9096dcb9727c13555b6be26c7effa707b01f06a4c561ba7a3635443cf2cc
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ needs.follow.outputs.sha }}
+          persist-credentials: false
+
+      - name: Check the official MCP registry
+        id: registry
+        run: python3 scripts/registry_version.py
+
+      - name: Sign in, and publish a new version
         env:
           MCP_REGISTRY_PRIVATE_KEY: ${{ secrets.MCP_REGISTRY_PRIVATE_KEY }}
           PUBLISH: ${{ steps.registry.outputs.publish }}
         run: |
+          if [ -z "$MCP_REGISTRY_PRIVATE_KEY" ]; then
+            echo "::error::MCP_REGISTRY_PRIVATE_KEY is not set in the mcp-registry environment"
+            exit 1
+          fi
           # The publisher keeps its sign-in token under HOME: give it a home of its
-          # own and delete it with the binary, before any store CLI runs.
+          # own and delete it with the binary when the step ends.
           work="$RUNNER_TEMP/mcp-publisher"
           trap 'rm -rf "$work"' EXIT
           mkdir -p "$work/home"
@@ -91,6 +130,19 @@ jobs:
           if [ "$PUBLISH" = "true" ]; then
             HOME="$work/home" "$work/mcp-publisher" publish
           fi
+
+  lobehub:
+    needs: follow
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      # Whether the secret is configured; the values are set on their own step.
+      HAS_LOBEHUB: ${{ secrets.LOBEHUB_CREDENTIALS_KEY != '' }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ needs.follow.outputs.sha }}
+          persist-credentials: false
 
       - name: Restore the LobeHub session
         if: env.HAS_LOBEHUB == 'true'
@@ -114,7 +166,7 @@ jobs:
         env:
           LOBEHUB_CREDENTIALS_KEY: ${{ secrets.LOBEHUB_CREDENTIALS_KEY }}
           LOBEHUB_CREDENTIALS_SEED: ${{ secrets.LOBEHUB_CREDENTIALS_SEED }}
-          CHANGED: ${{ steps.mirror.outputs.changed }}
+          CHANGED: ${{ needs.follow.outputs.changed }}
           REFRESH: ${{ inputs.refresh_stores }}
         run: |
           python3 scripts/lobehub_session.py unpack
