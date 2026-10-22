@@ -9,8 +9,10 @@ updates:
     cooldown:
       default-days: 7
   # The locked LobeHub CLI that follow-live-server.yml refreshes the listing with.
+  # It lives outside .github/ because Dependabot cannot open pull requests for an
+  # npm package file there.
   - package-ecosystem: npm
-    directory: /.github/lobehub
+    directory: /scripts/lobehub-cli
     schedule:
       interval: weekly
     cooldown:

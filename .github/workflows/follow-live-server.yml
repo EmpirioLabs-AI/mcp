@@ -18,7 +18,7 @@ name: Follow the live MCP server
 # registry job runs only when there is a version to publish or a sign-in was
 # asked for, and installs nothing: mcp-publisher is a release binary checked
 # against a pinned SHA-256. The LobeHub CLI comes from
-# .github/lobehub/package-lock.json (exact versions and integrity hashes, no
+# scripts/lobehub-cli/package-lock.json (exact versions and integrity hashes, no
 # install scripts), installed in a step with no secret.
 #
 # No schedule here: GitHub stops scheduled workflows in a public repository after
@@ -156,7 +156,7 @@ jobs:
         if: env.HAS_LOBEHUB == 'true'
         run: |
           mkdir -p "$RUNNER_TEMP/lobehub"
-          cp .github/lobehub/package.json .github/lobehub/package-lock.json "$RUNNER_TEMP/lobehub/"
+          cp scripts/lobehub-cli/package.json scripts/lobehub-cli/package-lock.json "$RUNNER_TEMP/lobehub/"
           cd "$RUNNER_TEMP/lobehub"
           npm ci --ignore-scripts --no-audit --no-fund
           node_modules/.bin/lhm --version
