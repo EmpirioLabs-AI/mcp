@@ -1,0 +1,11 @@
+{
+  "name": "empiriolabs-mcp-lobehub-cli",
+  "private": true,
+  "description": "The LobeHub Marketplace CLI (lhm) that .github/workflows/follow-live-server.yml runs, installed from package-lock.json with npm ci --ignore-scripts outside the checkout.",
+  "dependencies": {
+    "@lobehub/market-cli": "0.0.41"
+  },
+  "overrides": {
+    "adm-zip": "0.6.1"
+  }
+}

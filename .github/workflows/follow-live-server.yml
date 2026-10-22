@@ -8,7 +8,10 @@ name: Follow the live MCP server
 #
 # Each secret reaches only the step that uses it, the checkout leaves no token
 # on disk, and the store CLIs are pinned and run outside the repository, so one
-# compromised tool or a tampered listing cannot reach another credential.
+# compromised tool or a tampered listing cannot reach another credential. The
+# LobeHub CLI comes from .github/lobehub/package-lock.json (exact versions and
+# integrity hashes, no install scripts), installed in a step with no secret; the
+# mirror never writes under .github.
 #
 # No schedule here: GitHub stops scheduled workflows in a public repository after
 # 60 days without a commit. heartbeat.yml and the documentation repository's
@@ -37,7 +40,6 @@ jobs:
       # Whether each secret is configured; the values are set on their own steps.
       HAS_LOBEHUB: ${{ secrets.LOBEHUB_CREDENTIALS_KEY != '' }}
       HAS_REGISTRY_KEY: ${{ secrets.MCP_REGISTRY_PRIVATE_KEY != '' }}
-      LOBEHUB_CLI: "@lobehub/market-cli@0.0.41"
       MCP_PUBLISHER_URL: https://github.com/modelcontextprotocol/registry/releases/download/v1.8.1/mcp-publisher_linux_amd64.tar.gz
       MCP_PUBLISHER_SHA256: a06c9096dcb9727c13555b6be26c7effa707b01f06a4c561ba7a3635443cf2cc
     steps:
@@ -98,6 +100,15 @@ jobs:
           key: lobehub-session-${{ github.run_id }}
           restore-keys: lobehub-session-
 
+      - name: Install the LobeHub CLI from its lockfile
+        if: env.HAS_LOBEHUB == 'true'
+        run: |
+          mkdir -p "$RUNNER_TEMP/lobehub"
+          cp .github/lobehub/package.json .github/lobehub/package-lock.json "$RUNNER_TEMP/lobehub/"
+          cd "$RUNNER_TEMP/lobehub"
+          npm ci --ignore-scripts --no-audit --no-fund
+          node_modules/.bin/lhm --version
+
       - name: Refresh LobeHub
         if: env.HAS_LOBEHUB == 'true'
         env:
@@ -109,9 +120,9 @@ jobs:
           python3 scripts/lobehub_session.py unpack
           status=0
           if [ "$CHANGED" = "true" ] || [ "$REFRESH" = "true" ]; then
-            (cd "$RUNNER_TEMP" && npx --yes "$LOBEHUB_CLI" plugin update --dir "$GITHUB_WORKSPACE") || status=$?
+            (cd "$RUNNER_TEMP" && "$RUNNER_TEMP/lobehub/node_modules/.bin/lhm" plugin update --dir "$GITHUB_WORKSPACE") || status=$?
           elif python3 scripts/lobehub_session.py due; then
-            (cd "$RUNNER_TEMP" && npx --yes "$LOBEHUB_CLI" plugin list > /dev/null) || status=$?
+            (cd "$RUNNER_TEMP" && "$RUNNER_TEMP/lobehub/node_modules/.bin/lhm" plugin list > /dev/null) || status=$?
           fi
           # LobeHub rotates the session on refresh: save it even if the CLI failed afterwards.
           python3 scripts/lobehub_session.py pack
