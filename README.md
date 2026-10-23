@@ -4,7 +4,7 @@
 
 # EmpirioLabs AI MCP server
 
-Remote [Model Context Protocol](https://modelcontextprotocol.io) server for [EmpirioLabs AI](https://empiriolabs.ai). Run 180+ AI models, image, video and speech generation, web search, batch jobs, GPU Cloud and hosted agents as tools with your EmpirioLabs account. It is a remote server, so there is nothing to install.
+Remote [Model Context Protocol](https://modelcontextprotocol.io) server for [EmpirioLabs AI](https://empiriolabs.ai). Run AI models, image, video and speech generation, web search, batch jobs, GPU Cloud and hosted agents as tools with your EmpirioLabs AI account. It is a remote server, so there is nothing to install.
 
 | | |
 |---|---|
@@ -36,7 +36,7 @@ Run `/mcp` inside Claude Code to complete the sign-in the first time. The reposi
 
 1. Open [EmpirioLabs AI](https://chatgpt.com/plugins/plugin_asdk_app_6abd51b0891c81918954286cdd388fa3) in the ChatGPT Plugins directory and install it.
 2. Sign in to EmpirioLabs, review the request, and choose **Allow access**.
-3. Mention **@EmpirioLabs AI** in a chat to use it.
+3. In a chat, type **@** and choose **EmpirioLabs AI**.
 
 You can also add the server yourself: open **Settings**, then **Plugins**, and turn on **Developer mode**. Then, on the **Plugins** page, choose **Add plugin**, then **Create app**, and enter `https://mcp.empiriolabs.ai/mcp` as the server URL with **OAuth** authentication. The server also provides the `search` and `fetch` tools ChatGPT uses for connectors, so it works in chat and in deep research.
 

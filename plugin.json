@@ -2,7 +2,7 @@
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "empiriolabs-ai",
   "version": "1.2.0",
-  "description": "Run 180+ AI models, image, video and speech generation, web search, batch jobs, GPU Cloud and hosted agents as tools with your EmpirioLabs account.",
+  "description": "Run AI models, image, video and speech generation, web search, batch jobs, GPU Cloud and hosted agents as tools with your EmpirioLabs AI account.",
   "author": {
     "name": "EmpirioLabs AI",
     "email": "support@empiriolabs.ai",
