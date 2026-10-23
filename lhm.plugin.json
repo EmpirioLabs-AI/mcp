@@ -1159,6 +1159,128 @@
       }
     },
     {
+      "name": "read_document",
+      "description": "Read a PDF or an image at a public URL (or a base64 data URI) with a document OCR model and return every page as Markdown, with image regions, tables, headers and footers. Choose pages with zero-based numbers. Returns the pages, or a job_id for a long document. Uses credits.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "model": {
+            "description": "Document OCR model id.",
+            "type": "string"
+          },
+          "document": {
+            "description": "The PDF (`document_url`) or image (`image_url`) to read.",
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "enum": [
+                      "document_url"
+                    ],
+                    "type": "string"
+                  },
+                  "document_url": {
+                    "description": "A public URL of a PDF, or a base64 data URI such as `data:application/pdf;base64,...`. Up to 50 MB.",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "document_url"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "enum": [
+                      "image_url"
+                    ],
+                    "type": "string"
+                  },
+                  "image_url": {
+                    "description": "A public URL of a PNG, JPEG, WebP, TIFF, BMP, GIF or AVIF image, or a base64 data URI. Up to 50 MB.",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "image_url"
+                ],
+                "additionalProperties": false
+              }
+            ]
+          },
+          "pages": {
+            "description": "Zero-based pages to read, as a list or a string such as `\"0,2-4\"`. Every page when omitted. At most 1,000 pages per request.",
+            "anyOf": [
+              {
+                "type": "array",
+                "items": {
+                  "minimum": 0,
+                  "type": "integer"
+                }
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "include_image_base64": {
+            "description": "Return each image region as a JPEG data URI in `images[].image_base64`.",
+            "default": false,
+            "type": "boolean"
+          },
+          "image_limit": {
+            "description": "Return at most this many images for the whole document, the first ones first.",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "image_min_size": {
+            "description": "Leave out image regions narrower or shorter than this many pixels.",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "table_format": {
+            "description": "Move each table into `tables[]` in this format and leave a link such as `[tbl-0.html](tbl-0.html)` in `markdown`. Tables stay in `markdown` as HTML when omitted.",
+            "enum": [
+              "markdown",
+              "html"
+            ],
+            "type": "string"
+          },
+          "extract_header": {
+            "description": "Move the header text out of `markdown` into `header`.",
+            "default": false,
+            "type": "boolean"
+          },
+          "extract_footer": {
+            "description": "Move the footer text out of `markdown` into `footer`.",
+            "default": false,
+            "type": "boolean"
+          },
+          "include_blocks": {
+            "description": "Include `blocks`, every region of each page in reading order.",
+            "default": true,
+            "type": "boolean"
+          },
+          "wait_seconds": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 50,
+            "description": "Seconds to wait for the result before returning a job_id for the running job (default 40, max 50)."
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "model",
+          "document"
+        ]
+      }
+    },
+    {
       "name": "web_search",
       "description": "Run a live web search through a search model (for example exa-search, tavily-search, linkup-search). Returns results with titles, URLs and snippets. Uses credits.",
       "inputSchema": {
