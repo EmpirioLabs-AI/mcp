@@ -3,7 +3,7 @@
   "private": true,
   "description": "The LobeHub Marketplace CLI (lhm) that .github/workflows/follow-live-server.yml runs, installed from package-lock.json with npm ci --ignore-scripts outside the checkout. Kept outside .github/ so Dependabot can open pull requests for it.",
   "dependencies": {
-    "@lobehub/market-cli": "0.0.41"
+    "@lobehub/market-cli": "0.0.42"
   },
   "overrides": {
     "adm-zip": "0.6.1"
