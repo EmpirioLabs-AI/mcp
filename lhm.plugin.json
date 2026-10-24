@@ -1595,22 +1595,20 @@
             "type": "string"
           },
           "scan_type": {
-            "description": "What to check: `ai_detection` (the default), `bibliography` or `fact_check`.",
+            "description": "What to check: `ai_detection` (the default).",
             "enum": [
-              "ai_detection",
-              "bibliography",
-              "fact_check"
+              "ai_detection"
             ],
             "default": "ai_detection",
             "type": "string"
           },
           "multilingual": {
-            "description": "Enable multilingual model (FR / ES on top of EN).",
+            "description": "Has no effect. The language is detected automatically, and non-English text is scanned with the multilingual model.",
             "default": false,
             "type": "boolean"
           },
           "version": {
-            "description": "Detector version. The latest version is used by default.",
+            "description": "The GPTZero model version to scan with. Leave as `__latest__` to use the newest version. A version that is unknown or no longer available returns a 400 error that lists the versions you can use.",
             "default": "__latest__",
             "type": "string"
           }
@@ -2949,7 +2947,7 @@
         "type": "object",
         "properties": {
           "model": {
-            "description": "Image-edit model id (default `step-image-edit-2`).",
+            "description": "Image-edit model id, such as `grok-imagine-image-2-0`.",
             "type": "string"
           },
           "prompt": {
@@ -2974,6 +2972,7 @@
         },
         "additionalProperties": false,
         "required": [
+          "model",
           "prompt",
           "image"
         ]
