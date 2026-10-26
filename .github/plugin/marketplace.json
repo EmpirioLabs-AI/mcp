@@ -1,0 +1,19 @@
+{
+  "name": "empiriolabs",
+  "owner": {
+    "name": "EmpirioLabs AI",
+    "email": "support@empiriolabs.ai"
+  },
+  "metadata": {
+    "description": "Run AI models, image, video and speech generation, web search, batch jobs, GPU Cloud and hosted agents as tools with your EmpirioLabs AI account.",
+    "version": "1.2.0"
+  },
+  "plugins": [
+    {
+      "name": "empiriolabs-ai",
+      "description": "Run AI models, image, video and speech generation, web search, batch jobs, GPU Cloud and hosted agents as tools with your EmpirioLabs AI account.",
+      "version": "1.2.0",
+      "source": "./"
+    }
+  ]
+}
