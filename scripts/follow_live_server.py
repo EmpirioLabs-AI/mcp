@@ -25,6 +25,9 @@ URL = os.environ.get("LISTING_URL", "https://mcp.empiriolabs.ai/listing.json")
 MIN_TOOLS = 20
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 PROTECTED = {".git", ".github", "scripts", "node_modules"}
+# Data files the listing may write inside a protected directory, by exact path: GitHub Copilot CLI reads a
+# plugin marketplace only from .github/plugin/ or .claude-plugin/. Never a workflow or a script.
+PROTECTED_EXCEPTIONS = {".github/plugin/marketplace.json"}
 SERVER_NAME = "ai.empiriolabs/mcp"
 SERVER_ENDPOINT = "https://mcp.empiriolabs.ai/mcp"
 OWN_DOMAIN = "empiriolabs.ai"
@@ -66,6 +69,14 @@ def foreign_link(link: str) -> bool:
     return not (host == "github.com" and parts.path.startswith("/EmpirioLabs-AI/"))
 
 
+def path_refused(relative: str) -> bool:
+    """A listing path this follow never writes: outside the repository, or inside a protected directory."""
+    path = pathlib.PurePosixPath(relative)
+    if not path.parts or path.is_absolute() or ".." in path.parts:
+        return True
+    return path.parts[0] in PROTECTED and str(path) not in PROTECTED_EXCEPTIONS
+
+
 def server_problem(text: str) -> str:
     """Why server.json cannot be ours, or an empty string."""
     try:
@@ -91,8 +102,7 @@ def main() -> int:
         print(f"refusing an implausible listing (tools={tools!r})")
         return 1
     for relative, content in sorted(files.items()):
-        path = pathlib.PurePosixPath(relative)
-        if not path.parts or path.is_absolute() or ".." in path.parts or path.parts[0] in PROTECTED or not isinstance(content, str):
+        if path_refused(relative) or not isinstance(content, str):
             print(f"refusing path {relative!r}")
             return 1
         foreign = sorted({link for link in LINK.findall(content) if foreign_link(link)})
