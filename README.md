@@ -59,6 +59,19 @@ Remote servers are configured with a URL. Sign in through OAuth when the editor 
 
 VS Code reads the same shape from `.vscode/mcp.json` with a `servers` key and `"type": "http"`. Codex CLI: `codex mcp add empiriolabs --url https://mcp.empiriolabs.ai/mcp`. Gemini CLI and Windsurf accept the JSON block above in their MCP settings. Cline: see [llms-install.md](llms-install.md).
 
+### GitHub Copilot CLI
+
+```bash
+copilot plugin marketplace add EmpirioLabs-AI/mcp
+copilot plugin install empiriolabs-ai@empiriolabs
+```
+
+The plugin adds the server as `empiriolabs`. Sign in when Copilot CLI asks, and run `/mcp auth empiriolabs` to sign in again or switch accounts. To use an API key instead of the plugin, add the server yourself:
+
+```bash
+copilot mcp add --transport http --header "Authorization: Bearer sk-empiriolabs-your_key_here" empiriolabs https://mcp.empiriolabs.ai/mcp
+```
+
 ### Google Antigravity
 
 Antigravity names the endpoint field `serverUrl`, not `url`. Put this in
