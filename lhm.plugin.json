@@ -2108,6 +2108,11 @@
           "name": {
             "description": "Optional label for the GPU Cloud instance.",
             "type": "string"
+          },
+          "spot": {
+            "description": "Deploy as a spot instance, priced from the GPU's `spot_boxes`. A spot instance can be reclaimed at any time; it then stops and can be started again. With `spot: true`, `volume_id` may name an object bucket or a network volume, not a workspace volume.",
+            "default": false,
+            "type": "boolean"
           }
         },
         "additionalProperties": false,
