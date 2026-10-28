@@ -2115,7 +2115,7 @@
             "type": "boolean"
           },
           "max_runtime_seconds": {
-            "description": "Destroy the instance automatically once its GPU has been allocated for this many seconds, startup included, whether or not your client is still connected. Counted again from each start. Omit for no limit.",
+            "description": "Destroy the instance automatically once its GPU has been allocated for this many seconds, startup included, whether or not your client is still connected. Counted again from each start. Omit for no limit. Change or remove it later with `POST /v1/gpu/instances/{instance_id}/max-runtime`.",
             "minimum": 60,
             "maximum": 2592000,
             "type": "integer"
@@ -2292,6 +2292,30 @@
         "required": [
           "instance_id",
           "action"
+        ]
+      }
+    },
+    {
+      "name": "set_gpu_instance_max_runtime",
+      "description": "Change how long a deployed or stopped GPU instance may run before it is destroyed automatically, counted from when its GPU was allocated, or remove the limit with null.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "instance_id": {
+            "type": "string",
+            "description": "GPU instance id."
+          },
+          "max_runtime_seconds": {
+            "description": "The new limit in seconds (60 to 2,592,000), counted from when the GPU was allocated, or null to remove the limit.",
+            "minimum": 60,
+            "maximum": 2592000,
+            "type": "integer"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "instance_id",
+          "max_runtime_seconds"
         ]
       }
     },

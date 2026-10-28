@@ -118,7 +118,7 @@ curl "https://mcp.empiriolabs.ai/mcp" \
 
 ## Tools
 
-83 tools in 10 toolsets. The complete reference with every parameter is on the [documentation page](https://docs.empiriolabs.ai/mcp).
+84 tools in 10 toolsets. The complete reference with every parameter is on the [documentation page](https://docs.empiriolabs.ai/mcp).
 
 | Toolset | What it covers |
 |---|---|
