@@ -2309,7 +2309,8 @@
             "description": "The new limit in seconds (60 to 2,592,000), counted from when the GPU was allocated, or null to remove the limit.",
             "minimum": 60,
             "maximum": 2592000,
-            "type": "integer"
+            "type": "integer",
+            "nullable": true
           }
         },
         "additionalProperties": false,
