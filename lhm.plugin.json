@@ -2591,8 +2591,7 @@
               "discord",
               "slack",
               "matrix",
-              "mattermost",
-              "msteams"
+              "mattermost"
             ],
             "type": "string"
           },
@@ -2632,7 +2631,6 @@
               "slack",
               "matrix",
               "mattermost",
-              "msteams",
               "whatsapp"
             ],
             "type": "string",
@@ -2663,7 +2661,6 @@
               "slack",
               "matrix",
               "mattermost",
-              "msteams",
               "whatsapp"
             ],
             "type": "string",
@@ -2771,7 +2768,6 @@
               "slack",
               "matrix",
               "mattermost",
-              "msteams",
               "whatsapp"
             ],
             "type": "string"
