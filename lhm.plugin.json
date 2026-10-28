@@ -2113,6 +2113,12 @@
             "description": "Deploy as a spot instance, priced from the GPU's `spot_boxes`. A spot instance can be reclaimed at any time; it then stops and can be started again. With `spot: true`, `volume_id` may name an object bucket or a network volume, not a workspace volume.",
             "default": false,
             "type": "boolean"
+          },
+          "max_runtime_seconds": {
+            "description": "Destroy the instance automatically once its GPU has been allocated for this many seconds, startup included, whether or not your client is still connected. Counted again from each start. Omit for no limit.",
+            "minimum": 60,
+            "maximum": 2592000,
+            "type": "integer"
           }
         },
         "additionalProperties": false,
