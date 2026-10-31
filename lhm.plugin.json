@@ -78,7 +78,7 @@
         "properties": {
           "model_id": {
             "type": "string",
-            "description": "Canonical model slug."
+            "description": "Model ID, or one of the model's `aliases`."
           }
         },
         "additionalProperties": false,
@@ -98,7 +98,7 @@
             "type": "string"
           },
           "messages": {
-            "description": "The conversation so far, as `role` and `content` messages.",
+            "description": "The conversation so far, as `role` and `content` messages. A `developer` message is treated as a `system` message.",
             "type": "array",
             "items": {
               "type": "object",
@@ -106,6 +106,7 @@
                 "role": {
                   "enum": [
                     "system",
+                    "developer",
                     "user",
                     "assistant",
                     "tool"
@@ -138,6 +139,11 @@
           },
           "max_tokens": {
             "description": "Maximum number of tokens to generate.",
+            "type": "integer"
+          },
+          "max_completion_tokens": {
+            "description": "OpenAI's newer name for the output limit. Sent without `max_tokens`, it sets the limit, up to the model's maximum output.",
+            "minimum": 1,
             "type": "integer"
           },
           "tools": {
@@ -211,7 +217,7 @@
             "type": "integer"
           },
           "disable_formatting": {
-            "description": "Return raw upstream response with no server-side formatting.",
+            "description": "Return the answer without EmpirioLabs formatting, such as the Sources list that web search adds, on models that list this parameter. Each model's docs page says what it changes.",
             "default": false,
             "type": "boolean"
           },
@@ -246,7 +252,7 @@
             "type": "string"
           },
           "input": {
-            "description": "Text to embed, or an array of texts.",
+            "description": "Text to embed, or an array of texts. Multimodal embedding models also take an array of `text`, `image`, and `video` parts. Token IDs return `400`.",
             "anyOf": [
               {
                 "type": "string"
@@ -256,17 +262,42 @@
                 "items": {
                   "type": "string"
                 }
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "description": "`text`, `image`, or `video`.",
+                      "type": "string"
+                    },
+                    "text": {
+                      "type": "string"
+                    },
+                    "url": {
+                      "description": "Public URL of the image or video.",
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": true
+                }
               }
             ]
           },
           "encoding_format": {
-            "description": "Vector encoding: `float` arrays or `base64` strings.",
+            "description": "Vector encoding: `float` arrays or `base64` strings of little-endian 32-bit floats. Both work on every embedding model.",
             "enum": [
               "float",
               "base64"
             ],
             "default": "float",
             "type": "string"
+          },
+          "dimensions": {
+            "description": "Vector size, on models that offer more than one. A model with a fixed size returns `400` for any other value. See the model page for the sizes it offers.",
+            "minimum": 1,
+            "type": "integer"
           },
           "parameters": {
             "type": "object",
@@ -421,7 +452,7 @@
         "type": "object",
         "properties": {
           "model": {
-            "description": "Image model id, for example `qwen-image-2-0`. Omit it to use the default image model.",
+            "description": "Image model id, for example `qwen-image-2-0`. Omit it to use the default image model, `janus-pro-deepseek`, or a `template`'s recommended model.",
             "type": "string"
           },
           "prompt": {
@@ -429,7 +460,7 @@
             "type": "string"
           },
           "template": {
-            "description": "Optional image template slug. When provided, the canonical prompt blends with your `prompt`, the recommended model is chosen if you don't pass one, and default params merge for any key you didn't set. See `GET /v1/images/templates`.",
+            "description": "Optional image template slug. When provided, the canonical prompt blends with your `prompt`, the recommended model is chosen if you don't pass one, and default params merge for any key you didn't set. A template that runs only on its own model returns `400` `template_model_pinned` for any other model. See `GET /v1/images/templates`.",
             "type": "string"
           },
           "aspect_ratio": {
@@ -477,7 +508,7 @@
         "type": "object",
         "properties": {
           "model": {
-            "description": "Video model id from the catalog, for example `kling-3-0-turbo`.",
+            "description": "Video model id from the catalog, for example `kling-3-0-turbo`. Required unless `template` or `extend_from` is set.",
             "type": "string"
           },
           "prompt": {
@@ -485,11 +516,11 @@
             "type": "string"
           },
           "template": {
-            "description": "Optional template slug. When provided, the canonical prompt blends with your `prompt`, the recommended model is chosen if you don't pass one, and default params merge for any key you didn't supply. Validation 400s if the chosen model is not in `template.supported_models`. See `GET /v1/videos/templates`.",
+            "description": "Optional template slug. When provided, the canonical prompt blends with your `prompt`, the recommended model is chosen if you don't pass one, and default params merge for any key you didn't supply. A model that is not in `template.supported_models` returns `400` `template_model_unsupported`, and a template that runs only on its own model returns `400` `template_model_pinned` for any other model..",
             "type": "string"
           },
           "extend_from": {
-            "description": "Continue a prior video. Pass exactly one of `job_id` (any prior async job from this account) or `video_url` (an http(s) URL to a video). Works with every supported video model; EmpirioLabs handles the model-specific wiring for you.",
+            "description": "Continue a prior video. Pass exactly one of `job_id` (any prior async job from this account) or `video_url` (an http(s) URL to a video). Works with every supported video model; EmpirioLabs handles the model-specific wiring for you. Without `model`, the extend runs the template's recommended model, or `seedance-2-0-pro` when there is no template.",
             "type": "object",
             "properties": {
               "job_id": {
@@ -709,23 +740,39 @@
             "additionalProperties": true
           },
           "manifest": {
-            "description": "Prior render manifest for edit mode.",
+            "description": "Edit mode, required: the `manifest` from the render job's `result`, sent back unchanged. It carries the production's `recipe` and its `scenes`, and `recipe` must match the request's.",
             "type": "object",
             "additionalProperties": true
           },
           "edits": {
-            "description": "Scene-level edit instructions for edit mode.",
+            "description": "Edit mode, required. The scene edits to make, at most one of each action per scene.",
             "type": "array",
             "items": {
               "type": "object",
               "properties": {
                 "scene_index": {
+                  "description": "The scene to edit, counting from 0 in `manifest.scenes`.",
+                  "minimum": 0,
                   "type": "integer"
                 },
-                "instruction": {
+                "action": {
+                  "description": "`regen_visual` makes the scene's visual again, `edit_caption` replaces its caption, and `redo_vo` replaces its narration and redoes the voiceover.",
+                  "enum": [
+                    "regen_visual",
+                    "edit_caption",
+                    "redo_vo"
+                  ],
+                  "type": "string"
+                },
+                "value": {
+                  "description": "The new caption (`edit_caption`; omitted clears the caption) or narration (`redo_vo`). Not used by `regen_visual`.",
                   "type": "string"
                 }
               },
+              "required": [
+                "scene_index",
+                "action"
+              ],
               "additionalProperties": false
             }
           },
@@ -980,11 +1027,7 @@
             "type": "string"
           },
           "input": {
-            "description": "Script / lyrics. Use [S1] / [S2] tags for multi-speaker models.",
-            "type": "string"
-          },
-          "prompt": {
-            "description": "Music generation models use `prompt` instead of `input`.",
+            "description": "The text to speak. Use [S1] / [S2] tags for multi-speaker models.",
             "type": "string"
           },
           "voice": {
@@ -994,10 +1037,6 @@
           "output_format": {
             "description": "Audio file format, for example `mp3` or `wav`.",
             "type": "string"
-          },
-          "duration": {
-            "description": "Music generation only; output length in seconds.",
-            "type": "integer"
           },
           "parameters": {
             "type": "object",
@@ -1023,7 +1062,7 @@
           },
           "language": {
             "type": "string",
-            "description": "Filter by language. Qwen Audio 3.0 TTS matches it case-insensitively as a substring of the language name, for example `english`. Gemini 3.8 Flash TTS and Flash-Lite TTS match a BCP-47 locale or its language prefix, for example `fr-CA` or `fr`."
+            "description": "Filter by language. Qwen Audio 3.0 TTS matches it case-insensitively as a substring of the language name, for example `english`. Gemini 3.8 Flash TTS and Flash-Lite TTS match a BCP-47 locale or its language prefix, for example `fr-CA` or `fr`. Inworld TTS keeps the voices of one language code, for."
           },
           "gender": {
             "type": "string",
@@ -1066,12 +1105,12 @@
             "description": "Natural-language description of the audio to generate.",
             "type": "string"
           },
-          "input": {
-            "description": "Script / lyrics for podcast / multi-speaker models.",
+          "lyrics": {
+            "description": "Song lyrics, on models that sing them.",
             "type": "string"
           },
           "duration": {
-            "description": "Output length in seconds.",
+            "description": "Output length in seconds, on models that take it. Some models name it `audio_duration`; see the model page.",
             "type": "number"
           },
           "steps": {
@@ -1309,7 +1348,7 @@
     },
     {
       "name": "web_research",
-      "description": "Run a multi-step research task with citations (for example tavily-research, exa-research, linkup-deep-search). Takes up to a few minutes. Uses credits.",
+      "description": "Run a multi-step research task with citations with a research model (for example tavily-research). Takes up to a few minutes. Uses credits.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -1321,46 +1360,29 @@
             "description": "The research question.",
             "type": "string"
           },
-          "messages": {
-            "description": "Alternative to `query`; pass a chat-style messages array for multi-turn research.",
-            "type": "array",
-            "items": {
-              "type": "object",
-              "additionalProperties": true
-            }
-          },
-          "reasoning_effort": {
-            "description": "How much research to do: `low`, `medium` or `high`.",
+          "tavily_model": {
+            "description": "Research depth on `tavily-research`: `mini`, `pro`, or `auto`.",
             "enum": [
-              "low",
-              "medium",
-              "high"
+              "mini",
+              "pro",
+              "auto"
             ],
-            "default": "high",
+            "default": "auto",
             "type": "string"
           },
-          "max_output_tokens": {
-            "description": "Maximum length of the report in tokens.",
-            "default": 10000,
-            "type": "integer"
-          },
-          "search_domain_filter": {
-            "description": "Comma-separated domains. Prefix with '-' to exclude. Max 20.",
-            "type": "string"
-          },
-          "search_recency_filter": {
-            "description": "Only use sources from the last hour, day, week, month or year.",
+          "citation_format": {
+            "description": "Citation style of the report.",
             "enum": [
-              "hour",
-              "day",
-              "week",
-              "month",
-              "year"
+              "numbered",
+              "mla",
+              "apa",
+              "chicago"
             ],
+            "default": "numbered",
             "type": "string"
           },
           "disable_formatting": {
-            "description": "Skip EmpirioLabs Markdown formatting and return the raw upstream payload.",
+            "description": "Return the research result without EmpirioLabs Markdown formatting.",
             "default": false,
             "type": "boolean"
           },
@@ -1372,7 +1394,8 @@
         },
         "additionalProperties": false,
         "required": [
-          "model"
+          "model",
+          "query"
         ]
       }
     },
@@ -1389,6 +1412,16 @@
           "query": {
             "description": "The question to answer.",
             "type": "string"
+          },
+          "text": {
+            "description": "Include the text of each source in `results[].text`.",
+            "default": false,
+            "type": "boolean"
+          },
+          "disable_formatting": {
+            "description": "Return the answer without the appended list of sources.",
+            "default": false,
+            "type": "boolean"
           },
           "parameters": {
             "type": "object",
@@ -1493,7 +1526,7 @@
         "properties": {
           "task_id": {
             "type": "string",
-            "description": "Agent task id returned when the task started."
+            "description": "Agent task id, from `result.task_id` of the task's job."
           }
         },
         "additionalProperties": false,
@@ -1555,15 +1588,22 @@
             "type": "string"
           },
           "analysis_temperature": {
-            "description": "Sampling temperature for the answer.",
+            "description": "Sampling temperature for the answer, 0 to 1.",
+            "minimum": 0,
+            "maximum": 1,
+            "default": 0.1,
             "type": "number"
           },
           "analysis_top_p": {
-            "description": "Nucleus sampling value for the answer.",
+            "description": "Nucleus sampling value for the answer, 0.1 to 1.",
+            "minimum": 0.1,
+            "maximum": 1,
+            "default": 0.95,
             "type": "number"
           },
           "analysis_seed": {
             "description": "Random seed for a reproducible answer.",
+            "default": 42,
             "type": "integer"
           },
           "parameters": {
@@ -1733,7 +1773,10 @@
             "type": "string"
           },
           "completion_window": {
-            "description": "Time window for the batch to finish.",
+            "description": "Time window for the batch to finish. Only `24h` is accepted.",
+            "enum": [
+              "24h"
+            ],
             "default": "24h",
             "type": "string"
           },
@@ -1754,7 +1797,19 @@
       "description": "List the account's batch runs.",
       "inputSchema": {
         "type": "object",
-        "properties": {},
+        "properties": {
+          "limit": {
+            "minimum": 1,
+            "maximum": 100,
+            "default": 20,
+            "type": "integer",
+            "description": "Number of batches to return, 1 to 100."
+          },
+          "after": {
+            "type": "string",
+            "description": "A batch id; return the batches after it in the list."
+          }
+        },
         "additionalProperties": false
       }
     },
@@ -1802,7 +1857,8 @@
             "enum": [
               "processing",
               "completed",
-              "failed"
+              "failed",
+              "cancelled"
             ],
             "type": "string",
             "description": "Only jobs in this status."
@@ -2432,7 +2488,7 @@
             "type": "string"
           },
           "default_provider": {
-            "description": "Model provider for the agent. `empirio` uses EmpirioLabs models.",
+            "description": "Model provider for the agent. `empirio` uses EmpirioLabs models; `custom` uses your own endpoint, set in `custom_provider`.",
             "enum": [
               "empirio",
               "poe",
@@ -2443,8 +2499,42 @@
             "type": "string"
           },
           "default_model": {
-            "description": "Default model id for the agent.",
+            "description": "Default model id for the agent. With `custom`, the agent uses `custom_provider.model`.",
             "type": "string"
+          },
+          "custom_provider": {
+            "description": "Required when `default_provider` is `custom`. Your OpenAI- or Anthropic-compatible endpoint.",
+            "type": "object",
+            "properties": {
+              "base_url": {
+                "description": "Public HTTPS base URL of the endpoint.",
+                "format": "uri",
+                "type": "string"
+              },
+              "model": {
+                "description": "Model id the endpoint serves.",
+                "type": "string"
+              },
+              "api_key": {
+                "description": "API key for the endpoint. It is never returned.",
+                "type": "string"
+              },
+              "protocol": {
+                "description": "The API format the endpoint speaks.",
+                "enum": [
+                  "openai",
+                  "anthropic"
+                ],
+                "default": "openai",
+                "type": "string"
+              }
+            },
+            "required": [
+              "base_url",
+              "model",
+              "api_key"
+            ],
+            "additionalProperties": false
           },
           "config": {
             "description": "Non-secret agent configuration.",
@@ -2987,8 +3077,20 @@
             "type": "string"
           },
           "image": {
-            "description": "The https URL of the image to edit.",
-            "type": "string"
+            "description": "The HTTPS URL of the image to edit, or a list of URLs on models that take several.",
+            "anyOf": [
+              {
+                "format": "uri",
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "format": "uri",
+                  "type": "string"
+                }
+              }
+            ]
           },
           "parameters": {
             "type": "object",
