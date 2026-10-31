@@ -1737,6 +1737,74 @@
       }
     },
     {
+      "name": "list_batch_files",
+      "description": "List the account's batch input, output and error files, newest first.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "limit": {
+            "minimum": 1,
+            "maximum": 10000,
+            "default": 10000,
+            "type": "integer",
+            "description": "Maximum number of files to return, 1 to 10,000. A page holds at most 100."
+          },
+          "order": {
+            "enum": [
+              "asc",
+              "desc"
+            ],
+            "default": "desc",
+            "type": "string",
+            "description": "Sort order by creation time: `desc` (newest first) or `asc`."
+          },
+          "after": {
+            "type": "string",
+            "description": "A file id, usually the previous page's `last_id`; return the files after it."
+          },
+          "purpose": {
+            "type": "string",
+            "description": "Only files with this purpose: `batch` or `batch_output`. Any other value returns an empty list."
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_batch_file",
+      "description": "Get a batch file's purpose, size, number of requests and expiry time.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "file_id": {
+            "type": "string",
+            "description": "Id of a batch input, output or error file."
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "file_id"
+        ]
+      }
+    },
+    {
+      "name": "delete_batch_file",
+      "description": "Delete a batch input, output or error file and its content. The input file of a batch that is still running cannot be deleted.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "file_id": {
+            "type": "string",
+            "description": "Id of a batch input, output or error file."
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "file_id"
+        ]
+      }
+    },
+    {
       "name": "get_batch_file_content",
       "description": "Download the content of a batch input, output, or error file as JSONL text.",
       "inputSchema": {
@@ -1781,7 +1849,7 @@
             "type": "string"
           },
           "metadata": {
-            "description": "Your own key-value labels for the batch.",
+            "description": "Your own labels for the batch: up to 16 pairs, each key up to 64 characters and each value a string of up to 512 characters. Anything else returns `400` with `param` `metadata`.",
             "type": "object",
             "additionalProperties": true
           }
