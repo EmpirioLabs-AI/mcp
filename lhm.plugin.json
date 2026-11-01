@@ -299,6 +299,20 @@
             "minimum": 1,
             "type": "integer"
           },
+          "output_type": {
+            "description": "On models that offer sparse vectors: `dense` returns the vector in `embedding`, `sparse` returns token weights in `sparse_embedding` with an empty `embedding`, and `dense_and_sparse` returns both. Every output type bills the same tokens.",
+            "enum": [
+              "dense",
+              "sparse",
+              "dense_and_sparse"
+            ],
+            "default": "dense",
+            "type": "string"
+          },
+          "instruct": {
+            "description": "On models that take one: an instruction describing the search task, set when embedding search queries and left out for documents. Its tokens bill as input.",
+            "type": "string"
+          },
           "parameters": {
             "type": "object",
             "description": "Extra request fields passed through unchanged. Each model's supported parameters, ranges and defaults are listed in its model details.",
@@ -1031,8 +1045,18 @@
             "type": "string"
           },
           "voice": {
-            "description": "Voice id available for the chosen model.",
+            "description": "Voice id available for the chosen model. On models that offer custom voices, `custom` creates one from `voice_audio_url`, and a `voice_id` returned earlier speaks with that voice.",
             "type": "string"
+          },
+          "voice_audio_url": {
+            "description": "With `voice: custom`: an https URL to a recording of clear speech from the one speaker whose voice to clone.",
+            "format": "uri",
+            "type": "string"
+          },
+          "voice_consent": {
+            "description": "With `voice: custom`, on a model that lists this parameter: `true` confirms that you have the speaker's permission to create a synthetic copy of their voice. No custom voice is created without it.",
+            "default": false,
+            "type": "boolean"
           },
           "output_format": {
             "description": "Audio file format, for example `mp3` or `wav`.",
