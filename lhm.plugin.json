@@ -138,11 +138,11 @@
             "type": "number"
           },
           "max_tokens": {
-            "description": "Maximum number of tokens to generate.",
+            "description": "Maximum number of tokens to generate. To limit reasoning and the answer together, use `max_completion_tokens`.",
             "type": "integer"
           },
           "max_completion_tokens": {
-            "description": "OpenAI's newer name for the output limit. Sent without `max_tokens`, it sets the limit, up to the model's maximum output.",
+            "description": "The most tokens the model may generate, reasoning tokens included. When `max_tokens` is also sent, the smaller of the two applies. A value above the model's maximum output runs at the maximum.",
             "minimum": 1,
             "type": "integer"
           },
