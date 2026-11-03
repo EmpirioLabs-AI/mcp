@@ -844,7 +844,7 @@
             "type": "string"
           },
           "voice": {
-            "description": "Optional voice preset or voice ID for narration.",
+            "description": "The narration voice: one of the voice model's `voice` options (`GET /v1/models/{model}`), for example `Puck`. A plan stores it in the storyboard; a `voice` on a render request takes precedence.",
             "type": "string"
           },
           "product_image": {
@@ -895,15 +895,15 @@
             "type": "string"
           },
           "visual_model": {
-            "description": "Shortcut for `model_overrides.visual`.",
+            "description": "Shortcut for `model_overrides.visual`: the video model, one of the recipe's `models.visual.options`. On gameplay recipes it generates the background video. A plan stores it in the storyboard; a value on a render request takes precedence.",
             "type": "string"
           },
           "image_model": {
-            "description": "Shortcut for `model_overrides.image`.",
+            "description": "Shortcut for `model_overrides.image`: the image model for still scenes and pop-up images.",
             "type": "string"
           },
           "voice_model": {
-            "description": "Shortcut for `model_overrides.voice`.",
+            "description": "Shortcut for `model_overrides.voice`: the text-to-speech model for the narration. A plan stores it in the storyboard; a value on a render request takes precedence.",
             "type": "string"
           },
           "music_model": {
