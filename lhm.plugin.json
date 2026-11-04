@@ -1509,7 +1509,7 @@
             }
           },
           "agent_profile": {
-            "description": "Capability profile for the task. Manus accepts `standard` (default) for most work, `lite` for quicker, lower-cost tasks, and `max` for the most complex work. A follow-up sent with `task_id` can switch profiles.",
+            "description": "Capability profile for the task. Manus accepts `standard` (default) for most work, `lite` for quicker, lower-cost tasks, and `max` for the most complex work. `max` also takes a thinking level, `max-medium`, `max-high`, `max-extra` (the level plain `max` runs) or `max-ultra`, the deepest and slowest; a higher level reasons longer and uses more credits. A follow-up sent with `task_id` can switch.",
             "default": "standard",
             "type": "string"
           },
