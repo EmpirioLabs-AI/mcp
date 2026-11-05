@@ -1076,13 +1076,21 @@
     },
     {
       "name": "list_voices",
-      "description": "List the voices available for text-to-speech, filterable by model, language, gender or search text.",
+      "description": "List the voices available for text-to-speech, including the caller's own custom voices with their ids, filterable by model, type, language, gender or search text. Free.",
       "inputSchema": {
         "type": "object",
         "properties": {
           "model": {
             "type": "string",
             "description": "TTS model whose voice catalog to return, for example `qwen-audio-3-0-tts`, `inworld-tts-max`, or `gemini-3-8-flash-tts`."
+          },
+          "type": {
+            "enum": [
+              "custom",
+              "system"
+            ],
+            "type": "string",
+            "description": "`custom` returns only your custom voices, and `system` only the model's presets. Supported by Qwen Audio 3.0 TTS, Qwen Audio 3.1 TTS and Qwen Audio 3.1 TTS Plus."
           },
           "language": {
             "type": "string",
@@ -1111,6 +1119,28 @@
         },
         "additionalProperties": false,
         "required": [
+          "model"
+        ]
+      }
+    },
+    {
+      "name": "delete_voice",
+      "description": "Delete one of the caller's custom voices, which frees its place in the account's limit at once. This cannot be undone. Free.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "voice_id": {
+            "type": "string",
+            "description": "The custom voice's `id` from `GET /v1/voices`, or the `voice_id` from the response that created it."
+          },
+          "model": {
+            "type": "string",
+            "description": "The model the voice was created on, for example `qwen-audio-3-1-tts`."
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "voice_id",
           "model"
         ]
       }
