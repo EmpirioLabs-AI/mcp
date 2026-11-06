@@ -1053,10 +1053,17 @@
             "format": "uri",
             "type": "string"
           },
-          "voice_consent": {
-            "description": "With `voice: custom`, on a model that lists this parameter: `true` confirms that you have the speaker's permission to create a synthetic copy of their voice. No custom voice is created without it.",
-            "default": false,
-            "type": "boolean"
+          "voice_consent_audio_url": {
+            "description": "With `voice: custom`, on a model that lists this parameter: an https URL to the same speaker reading the consent statement on the model page. Both recordings must be of a real person.",
+            "format": "uri",
+            "type": "string"
+          },
+          "references": {
+            "description": "On a model that lists this parameter: up to three voice clips as https URLs or base64 audio data URIs. Name them `@voice1` to `@voice3` in `input`, in order.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           },
           "output_format": {
             "description": "Audio file format, for example `mp3` or `wav`.",
