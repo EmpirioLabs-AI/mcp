@@ -110,7 +110,7 @@ The server speaks JSON-RPC over `POST https://mcp.empiriolabs.ai/mcp`. Send `Aut
 
 ```bash
 curl "https://mcp.empiriolabs.ai/mcp" \
-  -H "Authorization: Bearer $EMPIRIOLABS_API_KEY" \
+  -H "Authorization: Bearer sk-empiriolabs-your_key_here" \
   -H "Accept: application/json, text/event-stream" \
   -H "Content-Type: application/json" \
   -d '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"list_models","arguments":{"modality":"image","limit":5}}}'
