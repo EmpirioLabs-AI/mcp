@@ -1239,6 +1239,11 @@
             "default": true,
             "type": "boolean"
           },
+          "sync": {
+            "description": "`false` answers `202` with a `job_id` at once instead of waiting for the transcript. Alias: `wait`.",
+            "default": true,
+            "type": "boolean"
+          },
           "parameters": {
             "type": "object",
             "description": "Extra request fields passed through unchanged. Each model's supported parameters, ranges and defaults are listed in its model details.",
