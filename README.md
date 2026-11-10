@@ -123,7 +123,7 @@ curl "https://mcp.empiriolabs.ai/mcp" \
 | Toolset | What it covers |
 |---|---|
 | Models | Browse the model catalog, prices, capabilities, and parameters |
-| Text | Run chat, embeddings, reranking, decisions, and AI text detection (uses credits) |
+| Text | Run chat, embeddings, reranking, decisions, AI text detection, image questions, document OCR, and transcription (uses credits) |
 | Search | Run web search, grounded answers, and research (uses credits) |
 | Media | Generate and edit images, video, audio, speech, transcription, document OCR, and 3D (uses credits) |
 | Jobs | Check, wait for, and cancel generation jobs |
