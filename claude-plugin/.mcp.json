@@ -2,7 +2,7 @@
   "mcpServers": {
     "empiriolabs": {
       "type": "http",
-      "url": "https://mcp.empiriolabs.ai/mcp"
+      "url": "https://mcp.empiriolabs.ai/mcp/no-media"
     }
   }
 }
