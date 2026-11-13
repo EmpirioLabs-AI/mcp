@@ -2272,7 +2272,7 @@
             "additionalProperties": true
           },
           "num_gpus": {
-            "description": "Number of GPUs in the machine, one of the GPU's `gpu_counts`; any other value is refused with `invalid_gpu_count` (422). Your current account limit is enforced at deploy and start time.",
+            "description": "Number of GPUs in the machine. One of the GPU's `gpu_counts`, an `n` from its `spot_boxes` with `spot` set, or, for a model deployment, an `n` from its `model_boxes`. Any other value is refused with `invalid_gpu_count` (422), as is a model deployment on a count the model cannot be served across. Your current account limit is enforced at deploy and start time.",
             "minimum": 1,
             "maximum": 64,
             "default": 1,
