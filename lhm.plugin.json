@@ -1642,11 +1642,11 @@
         "type": "object",
         "properties": {
           "model": {
-            "description": "Vision model id, for example `janus-pro-deepseek`.",
+            "description": "A chat model whose `input_modalities` include `image`, for example `qwen3-7-flash` or `nova-lite-1-0`. Omit it to use the default, `qwen3-7-flash`.",
             "type": "string"
           },
           "image_url": {
-            "description": "URL or base64 of the image to analyze.",
+            "description": "The image to analyze: an `https://` URL, a data URI such as `data:image/png;base64,...`, or base64-encoded image bytes.",
             "type": "string"
           },
           "question": {
@@ -1654,22 +1654,18 @@
             "type": "string"
           },
           "analysis_temperature": {
-            "description": "Sampling temperature for the answer, 0 to 1.",
+            "description": "Sampling temperature for the answer, sent to the model as `temperature`. Omit it to use the model's default.",
             "minimum": 0,
-            "maximum": 1,
-            "default": 0.1,
             "type": "number"
           },
           "analysis_top_p": {
-            "description": "Nucleus sampling value for the answer, 0.1 to 1.",
-            "minimum": 0.1,
+            "description": "Nucleus sampling value for the answer, sent to the model as `top_p`. Omit it to use the model's default.",
+            "minimum": 0,
             "maximum": 1,
-            "default": 0.95,
             "type": "number"
           },
           "analysis_seed": {
-            "description": "Random seed for a reproducible answer.",
-            "default": 42,
+            "description": "Random seed for a more reproducible answer, sent to the model as `seed`, on models that take one.",
             "type": "integer"
           },
           "parameters": {
@@ -1680,7 +1676,6 @@
         },
         "additionalProperties": false,
         "required": [
-          "model",
           "image_url",
           "question"
         ]
