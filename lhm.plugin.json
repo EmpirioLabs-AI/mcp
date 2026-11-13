@@ -466,7 +466,7 @@
         "type": "object",
         "properties": {
           "model": {
-            "description": "Image model id, for example `qwen-image-2-0`. Omit it to use the default image model, `janus-pro-deepseek`, or a `template`'s recommended model.",
+            "description": "Image model id, for example `qwen-image-2-0`. Omit it to use the default image model, `qwen-image-3-0`, or a `template`'s recommended model.",
             "type": "string"
           },
           "prompt": {
