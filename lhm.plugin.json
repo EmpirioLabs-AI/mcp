@@ -1112,7 +1112,7 @@
           },
           "language": {
             "type": "string",
-            "description": "Filter by language. Qwen Audio 3.0 TTS matches it case-insensitively as a substring of the language name, for example `english`. Gemini 3.8 Flash TTS and Flash-Lite TTS match a BCP-47 locale or its language prefix, for example `fr-CA` or `fr`. Inworld TTS keeps the voices of one language code, for."
+            "description": "Filter by language, written as its English name, for example `Spanish`. Gemini 3.8 Flash TTS, Flash-Lite TTS and Inworld TTS also take a two-letter code such as `es` or a locale such as `es-MX`. Qwen Audio 3.0 TTS matches the text case-insensitively as a substring of the language name. Without it,."
           },
           "gender": {
             "type": "string",
