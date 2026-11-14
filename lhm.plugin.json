@@ -931,12 +931,16 @@
     },
     {
       "name": "generate_3d",
-      "description": "Generate a 3D model from an image with a 3D generation model (for example trellis-2-4b). Returns a job_id for the running job. Uses credits.",
+      "description": "Generate a 3D asset with a 3D generation model from a text prompt, one or more images, or both, depending on the model. Returns a job_id for the running job. Uses credits.",
       "inputSchema": {
         "type": "object",
         "properties": {
           "model": {
-            "description": "3D model id, for example `trellis-2-4b`.",
+            "description": "3D generation model id: a model whose `category` is `3d` in `GET /v1/models`.",
+            "type": "string"
+          },
+          "prompt": {
+            "description": "Text prompt, on models that accept one: a description of the object to generate, or guidance for a generation from images.",
             "type": "string"
           },
           "image": {
@@ -952,8 +956,15 @@
               }
             ]
           },
+          "images": {
+            "description": "Several images of the same object, on models that accept more than one. Each item is a public URL or a base64 data URI. The model page gives the number of images the model accepts.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
           "image_url": {
-            "description": "Alias for `image` when passing a public URL.",
+            "description": "Alias of `image` for a public URL, on models that accept it. Prefer `image`.",
             "format": "uri",
             "type": "string"
           },
