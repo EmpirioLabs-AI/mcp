@@ -1,6 +1,6 @@
 # EmpirioLabs AI for Claude
 
-Run AI models, web search and research with citations and batch jobs from Claude through the EmpirioLabs AI remote MCP server.
+Run AI models and web search and research with citations from Claude through the EmpirioLabs AI remote MCP server.
 
 ## Sign in
 
