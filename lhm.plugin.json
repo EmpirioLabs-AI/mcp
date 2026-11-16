@@ -594,6 +594,15 @@
             "description": "Generation mode on models that expose one, for example `t2v`, `i2v`, or `r2v`. Defaults to `auto`, which picks the mode from the inputs you send. See the model page for the values a given model accepts.",
             "type": "string"
           },
+          "verified_portrait_ids": {
+            "description": "Put the account's verified person in the video: up to 9 ids of `active` photos from `GET /v1/account/verified-portraits`, on `seedance-2-5`, `seedance-2-5-flash`, `seedance-2-0-pro`, `seedance-2-0-fast`, and `seedance-2-0-mini`. The first photo is Image 1 in the prompt, the second Image 2, and so on.",
+            "maxItems": 9,
+            "type": "array",
+            "items": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
           "parameters": {
             "type": "object",
             "description": "Extra request fields passed through unchanged. Each model's supported parameters, ranges and defaults are listed in its model details.",
@@ -1785,6 +1794,42 @@
           }
         },
         "additionalProperties": false
+      }
+    },
+    {
+      "name": "list_verified_portraits",
+      "description": "List the account's My face photos (verified portraits) with their ids, labels and status, whether the face check is complete, and the consent notice. Pass the id of an active photo in verified_portrait_ids on generate_video to put the verified person in a Seedance video. Free.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "remove_face_data",
+      "description": "Remove the account's face verification and every verified portrait photo. This cannot be undone: using the face again needs a new face check and new photos, which are done on the My face page or through the API. Free.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "remove_verified_portrait",
+      "description": "Remove one verified portrait photo by id. It can no longer be used in a video, and this cannot be undone. The verification and the other photos stay. Free.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "portrait_id": {
+            "format": "uuid",
+            "type": "string",
+            "description": "The photo's `id` from `GET /v1/account/verified-portraits`."
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "portrait_id"
+        ]
       }
     },
     {
