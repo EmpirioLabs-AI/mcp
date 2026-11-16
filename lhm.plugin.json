@@ -1398,7 +1398,7 @@
     },
     {
       "name": "web_search",
-      "description": "Run a live web search through a search model (for example exa-search, tavily-search, linkup-search). Returns results with titles, URLs and snippets. Uses credits.",
+      "description": "Run a live web search through a search model (for example exa-search, tavily-search, linkup-standard). Returns results with titles, URLs and snippets. Uses credits.",
       "inputSchema": {
         "type": "object",
         "properties": {
