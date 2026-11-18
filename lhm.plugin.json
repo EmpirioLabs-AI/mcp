@@ -2678,6 +2678,7 @@
               "empirio",
               "poe",
               "openrouter",
+              "claude",
               "custom"
             ],
             "default": "empirio",
@@ -2926,6 +2927,7 @@
             "enum": [
               "poe",
               "openrouter",
+              "claude",
               "telegram",
               "discord",
               "slack",
@@ -3028,6 +3030,7 @@
               "empirio",
               "poe",
               "openrouter",
+              "claude",
               "custom"
             ],
             "type": "string"
