@@ -474,7 +474,7 @@
             "type": "string"
           },
           "template": {
-            "description": "Optional image template slug. When provided, the canonical prompt blends with your `prompt`, the recommended model is chosen if you don't pass one, and default params merge for any key you didn't set. A template that runs only on its own model returns `400` `template_model_pinned` for any other model. See `GET /v1/images/templates`.",
+            "description": "Optional image template slug. When provided, the template's effect is applied to your `prompt`, the recommended model is chosen if you don't pass one, and default params merge for any key you didn't set. A template that runs only on its own model returns `400` `template_model_pinned` for any other model. See `GET /v1/images/templates`.",
             "type": "string"
           },
           "aspect_ratio": {
@@ -530,7 +530,7 @@
             "type": "string"
           },
           "template": {
-            "description": "Optional template slug. When provided, the canonical prompt blends with your `prompt`, the recommended model is chosen if you don't pass one, and default params merge for any key you didn't supply. A model that is not in `template.supported_models` returns `400` `template_model_unsupported`, and a template that runs only on its own model returns `400` `template_model_pinned` for any other model..",
+            "description": "Optional template slug. When provided, the template's effect is applied to your `prompt`, the recommended model is chosen if you don't pass one, and default params merge for any key you didn't supply. A model that is not in `template.supported_models` returns `400` `template_model_unsupported`, and a template that runs only on its own model returns `400` `template_model_pinned` for any other.",
             "type": "string"
           },
           "extend_from": {
@@ -2115,7 +2115,7 @@
         "properties": {
           "slug": {
             "type": "string",
-            "description": "GPU type slug, for example `h100`."
+            "description": "GPU type slug, for example `h100-80gb`."
           }
         },
         "additionalProperties": false,
@@ -2748,7 +2748,7 @@
     },
     {
       "name": "get_hosted_agent",
-      "description": "Get one hosted agent's status, configuration and connection details.",
+      "description": "Get one hosted agent's status, runtime type and plan.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -2765,7 +2765,7 @@
     },
     {
       "name": "delete_hosted_agent",
-      "description": "Destroy a hosted agent, its storage and its channels, and stop its charges.",
+      "description": "Destroy a hosted agent, its storage and its channels. Its subscription is cancelled separately, under Subscriptions in the dashboard.",
       "inputSchema": {
         "type": "object",
         "properties": {
