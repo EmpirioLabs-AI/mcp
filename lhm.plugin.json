@@ -221,6 +221,10 @@
             "default": false,
             "type": "boolean"
           },
+          "cache_salt": {
+            "description": "On Native Inference chat models, keeps cached prompts apart within your account: requests with different values never read each other's cached prompts. Send one value per user of your application.",
+            "type": "string"
+          },
           "prompt": {
             "type": "string",
             "description": "A single user message to send to the model."
